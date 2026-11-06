@@ -47,7 +47,64 @@ No diagrama, cada círculo é uma região; as setas apontam para cidades de exem
 
 ## Stack / status
 
-Em construção no **HackBrasil**. A stack ainda não está definida neste repositório.
+Em construção no **HackBrasil**.
+
+- **Backend:** API em FastAPI, neste repositório (`backend/`), com Postgres e a extensão **pgvector**.
+- **Frontend:** Next.js, em projeto separado.
+- **Canal do MVP:** Telegram.
+- **Banco:** conexão por `DATABASE_URL` (SQLAlchemy assíncrono + Alembic).
+
+A visão das seções acima descreve o produto. Usuários, regiões e a memória compartilhada entram nas issues seguintes; esta etapa sobe a API, o Postgres e a extensão `vector`.
+
+## Backend local
+
+Pré-requisitos: Docker (com Compose), Python 3.12+ e [uv](https://docs.astral.sh/uv/).
+
+Na raiz do repositório:
+
+```bash
+cp .env.example .env
+docker compose up -d
+```
+
+O serviço `db` sobe a imagem `pgvector/pgvector` e publica o Postgres em `localhost:5432`. As credenciais padrão estão no `.env.example` (`solano` / `solano`, banco `solano`). Se mudar usuário, senha ou porta, mantenha `DATABASE_URL` alinhada com o Compose.
+
+Depois, instale o backend, aplique as migrations e suba a API:
+
+```bash
+cd backend
+uv sync --extra dev
+uv run alembic upgrade head
+uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+A migration inicial habilita a extensão `vector`.
+
+Confira o healthcheck:
+
+```bash
+curl -s http://127.0.0.1:8000/health
+```
+
+Com o Postgres no ar e as migrations aplicadas, a resposta é `{"status":"ok","database":"connected"}`. Se o banco estiver fora, a rota responde `503` com `"database":"disconnected"`.
+
+Testes (o Postgres precisa estar no ar, com `alembic upgrade head` já executado):
+
+```bash
+cd backend
+uv run pytest
+```
+
+Sem uv, no diretório `backend/`:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
+alembic upgrade head
+uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+pytest
+```
 
 ## Contribuindo / próximos passos
 
