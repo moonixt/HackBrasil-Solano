@@ -42,7 +42,7 @@ async def fetch_context(session: AsyncSession, user: User, service: Service | No
         HealthUnit.uf == user.uf,
     )
     if service is not None:
-        units_query = units_query.where(HealthUnit.services.any(service.value))
+        units_query = units_query.where(HealthUnit.services.contains([service.value]))
 
     result = await session.execute(units_query.order_by(HealthUnit.id))
     units = list(result.scalars().all())
