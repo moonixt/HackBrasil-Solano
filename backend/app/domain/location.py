@@ -1,4 +1,4 @@
-"""Parsing de "cidade, UF" nos formatos aceitos no onboarding."""
+"""Leitura de "Cidade, UF" sem LLM, usada pelo fallback do agente."""
 
 import re
 from dataclasses import dataclass

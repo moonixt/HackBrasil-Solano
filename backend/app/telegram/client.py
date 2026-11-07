@@ -12,6 +12,8 @@ class TelegramClientProtocol(Protocol):
 
     async def send_message(self, chat_id: int, text: str, reply_markup: dict | None = None) -> Any: ...
 
+    async def send_chat_action(self, chat_id: int, action: str) -> Any: ...
+
 
 class TelegramClient:
     def __init__(self, token: str, http_client: httpx.AsyncClient | None = None) -> None:
@@ -23,6 +25,13 @@ class TelegramClient:
         if reply_markup is not None:
             payload["reply_markup"] = reply_markup
         response = await self._client.post(f"{self._base_url}/sendMessage", json=payload)
+        response.raise_for_status()
+        return response.json()
+
+    async def send_chat_action(self, chat_id: int, action: str) -> Any:
+        response = await self._client.post(
+            f"{self._base_url}/sendChatAction", json={"chat_id": chat_id, "action": action}
+        )
         response.raise_for_status()
         return response.json()
 

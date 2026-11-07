@@ -1,39 +1,59 @@
-"""Ponto de entrada de cada Update do Telegram: parse na borda, resto é domínio puro."""
+"""Ponto de entrada de cada Update do Telegram: parse na borda, comandos fixos, o resto vai ao agente."""
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.agent.service import answer as agent_answer
+from app import messages
+from app.agent import memory
+from app.agent.agent import respond
 from app.db.models import Suggestion, User
-from app.domain.enums import OnboardingStep
-from app.onboarding import messages
-from app.onboarding.extract import locate
-from app.onboarding.state_machine import (
-    ONBOARDING_TRANSITIONS,
-    ContactData,
-    Incoming,
-    KeyboardAction,
-    reset_user,
-)
+from app.domain.phone import normalize_br_phone
 from app.telegram.client import TelegramClientProtocol
-from app.telegram.keyboards import markup_for
-from app.telegram.schemas import TelegramUpdate
+from app.telegram.keyboards import CONTACT_KEYBOARD, REMOVE_KEYBOARD
+from app.telegram.schemas import TelegramContact, TelegramUpdate
 
 
-async def _get_or_create_user(session: AsyncSession, chat_id: int) -> tuple[User, bool]:
+async def _get_or_create_user(session: AsyncSession, chat_id: int) -> User:
     result = await session.execute(select(User).where(User.telegram_chat_id == chat_id))
     user = result.scalar_one_or_none()
-    if user is not None:
-        return user, False
-
-    user = User(telegram_chat_id=chat_id, onboarding_step=OnboardingStep.AWAITING_CONTACT)
-    session.add(user)
-    await session.flush()
-    return user, True
+    if user is None:
+        user = User(telegram_chat_id=chat_id)
+        session.add(user)
+        await session.flush()
+    return user
 
 
-async def _send(client: TelegramClientProtocol, chat_id: int, text: str, action: KeyboardAction) -> None:
-    await client.send_message(chat_id, text, reply_markup=markup_for(action))
+def _save_contact(user: User, contact: TelegramContact) -> str:
+    if contact.user_id != user.telegram_chat_id:
+        return messages.MSG_INVALID_PHONE
+    phone = normalize_br_phone(contact.phone_number)
+    if phone is None:
+        return messages.MSG_INVALID_PHONE
+    user.phone = phone
+    user.name = f"{contact.first_name} {contact.last_name}" if contact.last_name else contact.first_name
+    return messages.MSG_PHONE_SAVED
+
+
+def _command_reply(session: AsyncSession, user: User, text: str) -> tuple[str, dict | None] | None:
+    """Comandos fixos. None quando a mensagem não é comando e deve ir ao agente."""
+    if text == "/start":
+        memory.forget(user.telegram_chat_id)
+        return messages.MSG_GREETING, CONTACT_KEYBOARD
+    if text == "/ajuda":
+        return messages.MSG_HELP, None
+    if text == "/local":
+        memory.forget(user.telegram_chat_id)
+        user.city = user.uf = user.region = user.neighborhood = None
+        return messages.MSG_LOCAL_RESET, None
+    if text.startswith("/sugerir"):
+        suggestion = text.removeprefix("/sugerir").strip()
+        if not suggestion:
+            return messages.MSG_SUGGEST_EMPTY, None
+        if user.city is None or user.uf is None:
+            return messages.MSG_SUGGEST_NEEDS_LOCATION, None
+        session.add(Suggestion(user_id=user.id, city=user.city, uf=user.uf, text=suggestion))
+        return messages.MSG_SUGGEST_THANKS, None
+    return None
 
 
 async def handle_update(update: dict, session: AsyncSession, client: TelegramClientProtocol) -> None:
@@ -44,63 +64,17 @@ async def handle_update(update: dict, session: AsyncSession, client: TelegramCli
     message = parsed.message
     chat_id = message.chat.id
     text = (message.text or "").strip()
+    user = await _get_or_create_user(session, chat_id)
 
-    user, created = await _get_or_create_user(session, chat_id)
-
-    if created or text == "/start":
-        if not created:
-            reset_user(user)
-        await session.commit()
-        await _send(client, chat_id, messages.MSG_GREETING, KeyboardAction.SHOW_CONTACT)
-        return
-
-    if text == "/ajuda":
-        await _send(client, chat_id, messages.MSG_HELP, KeyboardAction.NONE)
-        return
-
-    if text == "/local":
-        user.onboarding_step = OnboardingStep.AWAITING_CITY
-        user.city = user.uf = user.neighborhood = None
-        await session.commit()
-        await _send(client, chat_id, messages.MSG_ASK_CITY, KeyboardAction.NONE)
-        return
-
-    if text.startswith("/sugerir"):
-        suggestion_text = text.removeprefix("/sugerir").strip()
-        if not suggestion_text:
-            await _send(client, chat_id, messages.MSG_SUGGEST_EMPTY, KeyboardAction.NONE)
-            return
-        if user.city is None or user.uf is None:
-            await _send(client, chat_id, messages.MSG_SUGGEST_NEEDS_LOCATION, KeyboardAction.NONE)
-            return
-        session.add(Suggestion(user_id=user.id, city=user.city, uf=user.uf, text=suggestion_text))
-        await session.commit()
-        await _send(client, chat_id, messages.MSG_SUGGEST_THANKS, KeyboardAction.NONE)
-        return
-
-    if user.onboarding_step == OnboardingStep.READY:
-        if not text:
-            await _send(client, chat_id, messages.MSG_HELP, KeyboardAction.NONE)
-            return
-        reply_text = await agent_answer(session, user, text)
-        await _send(client, chat_id, reply_text, KeyboardAction.NONE)
-        return
-
-    contact = None
     if message.contact is not None:
-        contact = ContactData(
-            phone_number=message.contact.phone_number,
-            first_name=message.contact.first_name,
-            last_name=message.contact.last_name,
-            user_id=message.contact.user_id,
-        )
-    location = None
-    if text and user.onboarding_step == OnboardingStep.AWAITING_CITY:
-        location = await locate(text)
-    elif text and user.onboarding_step == OnboardingStep.AWAITING_NEIGHBORHOOD:
-        location = await locate(text, context=f"resposta à pergunta: qual é o seu bairro em {user.city}, {user.uf}?")
-    incoming = Incoming(text=text or None, contact=contact, location=location)
-    handler = ONBOARDING_TRANSITIONS[user.onboarding_step]
-    reply = handler(user, incoming)
+        reply, markup = _save_contact(user, message.contact), REMOVE_KEYBOARD
+    elif not text:
+        reply, markup = messages.MSG_HELP, None
+    elif (command := _command_reply(session, user, text)) is not None:
+        reply, markup = command
+    else:
+        await client.send_chat_action(chat_id, "typing")
+        reply, markup = await respond(session, user, text), None
+
     await session.commit()
-    await _send(client, chat_id, reply.text, reply.keyboard_action)
+    await client.send_message(chat_id, reply, reply_markup=markup)

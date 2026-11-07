@@ -19,6 +19,6 @@ def test_settings_defaults_leave_optional_integrations_disabled() -> None:
 
     assert settings.telegram_bot_token is None
     assert settings.telegram_webhook_secret is None
-    assert settings.anthropic_api_key is None
-    assert settings.anthropic_model == "claude-sonnet-5"
+    assert settings.llm_api_key is None
+    assert settings.llm_base_url == "https://api.groq.com/openai/v1"
     assert settings.admin_token is None

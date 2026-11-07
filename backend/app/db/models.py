@@ -1,8 +1,8 @@
 """Modelos de domínio: usuários, unidades de saúde, guias de serviço e sugestões.
 
 Sem tabela de histórico de mensagens — o escopo do Solano proíbe guardar conteúdo
-clínico ou conversa (ver README). A memória é só o que cada usuário informou no
-onboarding (cidade, bairro) e os dados públicos de unidades/guias.
+clínico ou conversa (ver README). O que fica salvo do usuário é só o que ele informou
+(telefone, cidade, bairro); a conversa vive em memória por pouco tempo (app.agent.memory).
 """
 
 from datetime import date, datetime
@@ -13,7 +13,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
 from app.db.types import pg_enum
-from app.domain.enums import OnboardingStep, Service, SuggestionStatus
+from app.domain.enums import Service, SuggestionStatus
 from app.domain.regions import Region
 
 
@@ -28,11 +28,6 @@ class User(Base):
     uf: Mapped[str | None] = mapped_column(String(2))
     region: Mapped[Region | None] = mapped_column(pg_enum(Region, "region"))
     neighborhood: Mapped[str | None] = mapped_column(Text)
-    onboarding_step: Mapped[OnboardingStep] = mapped_column(
-        pg_enum(OnboardingStep, "onboarding_step"),
-        nullable=False,
-        default=OnboardingStep.AWAITING_CONTACT,
-    )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False

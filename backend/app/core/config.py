@@ -28,13 +28,11 @@ class Settings(BaseSettings):
     telegram_bot_token: str | None = None
     telegram_webhook_secret: str | None = None
 
-    # Claude (Anthropic). Sem chave, o agente usa o formatador determinístico de fallback.
-    anthropic_api_key: str | None = None
-    anthropic_model: str = "claude-sonnet-5"
-
-    # Groq, usada quando não há chave da Anthropic.
-    groq_api_key: str | None = None
-    groq_model: str = "openai/gpt-oss-120b"
+    # LLM do agente, por qualquer API compatível com a da OpenAI (chat completions + tools).
+    # Sem chave, o bot responde pelo formatador determinístico de fallback.
+    llm_api_key: str | None = None
+    llm_base_url: str = "https://api.groq.com/openai/v1"
+    llm_model: str = "openai/gpt-oss-120b"
 
     # Token do painel de revisão de sugestões (/admin/*). Sem valor, a API fica desligada (503).
     admin_token: str | None = None

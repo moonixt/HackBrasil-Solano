@@ -16,12 +16,10 @@ branch_labels = None
 depends_on = None
 
 _REGION_VALUES = ("sul", "sudeste", "centro_oeste", "norte", "nordeste")
-_ONBOARDING_STEP_VALUES = ("awaiting_contact", "awaiting_city", "awaiting_neighborhood", "ready")
 _SERVICE_VALUES = ("vacinacao", "consulta")
 _SUGGESTION_STATUS_VALUES = ("pending", "verified", "rejected")
 
 region_enum = postgresql.ENUM(*_REGION_VALUES, name="region")
-onboarding_step_enum = postgresql.ENUM(*_ONBOARDING_STEP_VALUES, name="onboarding_step")
 service_enum = postgresql.ENUM(*_SERVICE_VALUES, name="service")
 suggestion_status_enum = postgresql.ENUM(*_SUGGESTION_STATUS_VALUES, name="suggestion_status")
 
@@ -39,12 +37,6 @@ def upgrade() -> None:
         sa.Column("uf", sa.String(length=2)),
         sa.Column("region", region_enum),
         sa.Column("neighborhood", sa.Text()),
-        sa.Column(
-            "onboarding_step",
-            onboarding_step_enum,
-            nullable=False,
-            server_default="awaiting_contact",
-        ),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
         sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
         sa.UniqueConstraint("telegram_chat_id", name="uq_users_telegram_chat_id"),
@@ -119,5 +111,4 @@ def downgrade() -> None:
     bind = op.get_bind()
     suggestion_status_enum.drop(bind, checkfirst=True)
     service_enum.drop(bind, checkfirst=True)
-    onboarding_step_enum.drop(bind, checkfirst=True)
     region_enum.drop(bind, checkfirst=True)

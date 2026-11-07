@@ -1,13 +1,14 @@
-"""Formatador determinístico usado quando ANTHROPIC_API_KEY não está configurada.
+"""Formatador determinístico usado quando não há LLM configurado ou ele falha.
 
 É o caminho que os testes exercitam — sem depender de rede ou de LLM.
 """
 
+from collections.abc import Iterable
 from datetime import date
 
 from app.agent.retrieval import RetrievedContext
 from app.db.models import HealthUnit, ServiceGuide
-from app.onboarding.messages import NO_MATCH_MESSAGE
+from app.messages import NO_MATCH_MESSAGE
 
 
 def _format_br_date(value: date) -> str:
@@ -38,9 +39,8 @@ def _format_guide(guide: ServiceGuide) -> str:
     return "\n".join(lines)
 
 
-def format_sources(context: RetrievedContext) -> str:
+def format_sources(records: Iterable[HealthUnit | ServiceGuide]) -> str:
     """Uma linha "Fonte: … · atualizado em …" por par distinto de fonte e data."""
-    records = [*context.units, *context.guides]
     lines = dict.fromkeys(_format_source_line(record.source, record.updated_at) for record in records)
     return "\n".join(lines)
 
@@ -51,5 +51,5 @@ def format_fallback_answer(context: RetrievedContext) -> str:
 
     blocks = [_format_unit(unit) for unit in context.units]
     blocks.extend(_format_guide(guide) for guide in context.guides)
-    blocks.append(format_sources(context))
+    blocks.append(format_sources([*context.units, *context.guides]))
     return "\n\n".join(blocks)

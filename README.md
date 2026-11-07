@@ -80,7 +80,7 @@ uv run alembic upgrade head
 uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-As migrations habilitam a extensão `vector` e criam o schema de saúde: usuários (com o passo do onboarding), unidades, guias de serviço e sugestões.
+As migrations habilitam a extensão `vector` e criam o schema de saúde: usuários, unidades, guias de serviço e sugestões.
 
 Confira o healthcheck:
 
@@ -95,8 +95,7 @@ Com o Postgres no ar e as migrations aplicadas, a resposta é `{"status":"ok","d
 Além de `DATABASE_URL`, o `.env.example` traz (todas opcionais, comentadas lá):
 
 - `TELEGRAM_BOT_TOKEN` e `TELEGRAM_WEBHOOK_SECRET` — bot do Telegram e o segredo do webhook.
-- `ANTHROPIC_API_KEY` e `ANTHROPIC_MODEL` — com chave, o agente redige a resposta com o Claude (default `claude-sonnet-5`).
-- `GROQ_API_KEY` e `GROQ_MODEL` — usados quando não há chave da Anthropic (default `openai/gpt-oss-120b`). Sem nenhuma das duas, ou se a API falhar, o agente responde pelo formatador de fallback (determinístico, por palavra-chave).
+- `LLM_API_KEY`, `LLM_BASE_URL` e `LLM_MODEL` — o LLM do agente, por qualquer API compatível com a da OpenAI (chat completions com tools). Default: Groq com `openai/gpt-oss-120b`. Sem chave, ou se a API falhar, o bot responde pelos dados com o formatador de fallback (por palavra-chave). No plano gratuito da Groq o limite é 8.000 tokens/minuto, o que dá umas 3 a 4 perguntas por minuto.
 - `ADMIN_TOKEN` — sem ele, `/admin/*` responde `503` (painel desligado).
 
 ### Dados de exemplo (seed)
@@ -111,6 +110,8 @@ uv run python -m app.seed data/recife_exemplo.json
 O seed faz upsert idempotente por `external_key` — rodar de novo atualiza os mesmos registros, sem duplicar.
 
 ### Telegram
+
+O bot é um agente: toda mensagem vai ao LLM, que usa três ferramentas (`salvar_localizacao`, `buscar_rede_de_saude`, `registrar_sugestao`, em `app/agent/tools.py`). Não há cadastro obrigatório; o telefone é opcional, pelo botão do `/start`. A conversa fica só em memória, por 30 minutos (`app/agent/memory.py`), e nunca vai para o banco.
 
 Para testar localmente sem expor uma URL pública, use long polling (ele mesmo derruba um webhook configurado antes de começar):
 
@@ -130,7 +131,7 @@ A rota `POST /telegram/webhook` só aceita requisições com o header `X-Telegra
 
 ### Revisão de sugestões (admin)
 
-Moradores podem sugerir correções pelo comando `/sugerir <texto>` no bot — a sugestão fica `pending` e nunca é usada numa resposta do agente até ser revisada. Com `ADMIN_TOKEN` configurado:
+Moradores podem sugerir correções conversando com o agente ("a UBS agora abre às 7h") ou pelo comando `/sugerir <texto>` — a sugestão fica `pending` e nunca é usada numa resposta do agente até ser revisada. Com `ADMIN_TOKEN` configurado:
 
 ```bash
 curl -s -H "X-Admin-Token: $ADMIN_TOKEN" http://127.0.0.1:8000/admin/suggestions?status=pending

@@ -20,8 +20,7 @@ async def _truncate_all() -> None:
 def _no_llm_keys(monkeypatch: pytest.MonkeyPatch) -> None:
     """O .env de quem roda os testes pode ter chaves reais; os testes nunca chamam LLM pela rede."""
     settings = get_settings()
-    monkeypatch.setattr(settings, "anthropic_api_key", None)
-    monkeypatch.setattr(settings, "groq_api_key", None)
+    monkeypatch.setattr(settings, "llm_api_key", None)
 
 
 @pytest.fixture
@@ -62,6 +61,9 @@ class FakeTelegramClient:
     async def send_message(self, chat_id: int, text: str, reply_markup: dict | None = None):
         self.sent.append(SentMessage(chat_id, text, reply_markup))
         return {"ok": True, "result": {"message_id": len(self.sent)}}
+
+    async def send_chat_action(self, chat_id: int, action: str):
+        return {"ok": True, "result": True}
 
 
 @pytest.fixture
