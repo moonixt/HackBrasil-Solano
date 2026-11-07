@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solano — orientação local sobre a rede de saúde</title>
+  <meta name="description" content="O Solano transforma informações dispersas sobre a rede de saúde em orientação local, simples e acessível. Onde se vacinar, como marcar consulta na UBS, que documentos levar.">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#ffffff">
+  <meta property="og:title" content="Solano — orientação local sobre a rede de saúde">
+  <meta property="og:description" content="Onde se vacinar, como marcar consulta na UBS, que documentos levar — com fonte e data de atualização.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script>document.documentElement.classList.add("js");</script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Ir para o conteúdo</a>
+
+  <header class="wrap site-header" id="topo">
+    <a class="wordmark" href="#topo"><span class="logo" aria-hidden="true"></span>Solano</a>
+    <a class="header-link" href="https://github.com/moonixt/HackBrasil-Solano">GitHub</a>
+  </header>
+
+  <main id="conteudo">
+    <section class="wrap hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Orientação em saúde</p>
+        <h1>O caminho até o atendimento de saúde, numa conversa.</h1>
+        <p class="lede">
+          O Solano transforma informações dispersas sobre a rede de saúde em orientação local,
+          simples e acessível. Você diz onde está e pergunta — ele explica o caminho,
+          os documentos e os locais, com fonte e data de atualização.
+        </p>
+        <div class="hero-actions">
+          <a class="button" href="#como-funciona">Como funciona</a>
+          <a class="text-link" href="https://github.com/moonixt/HackBrasil-Solano">Ver no GitHub <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+
+      <figure class="phone" aria-label="Exemplo de conversa com o Solano">
+        <div class="phone-screen">
+          <div class="phone-bar">
+            <span class="avatar">S</span>
+            <span class="who">
+              <strong>Solano</strong>
+              <small data-status>online</small>
+            </span>
+          </div>
+          <ol class="chat" data-chat>
+            <li class="bubble me">Oi! Onde consigo me vacinar?</li>
+            <li class="bubble bot">Te ajudo! Em qual cidade e bairro você está?</li>
+            <li class="bubble me">Recife, Boa Viagem.</li>
+            <li class="bubble bot">
+              A UBS do seu bairro aplica vacinas de segunda a sexta, das 8h às 16h.
+              Leve documento com foto, cartão do SUS e a caderneta de vacinação.
+              <span class="source">Fonte: Secretaria de Saúde · atualizado há 3 dias</span>
+            </li>
+            <li class="typing" aria-hidden="true"><span></span><span></span><span></span></li>
+          </ol>
+        </div>
+      </figure>
+    </section>
+
+    <section class="statement">
+      <p class="wrap reveal">
+        A informação sobre a rede de saúde existe, mas está espalhada em sites, cartazes e boca a boca.
+        <span>O Solano junta tudo numa conversa — com fonte e data.</span>
+      </p>
+    </section>
+
+    <section class="wrap section" id="como-funciona" aria-labelledby="como-funciona-titulo">
+      <header class="section-head reveal">
+        <p class="eyebrow">Como funciona</p>
+        <h2 id="como-funciona-titulo">Da dúvida ao atendimento em três mensagens.</h2>
+      </header>
+
+      <ol class="steps">
+        <li class="step reveal">
+          <div class="mock" aria-hidden="true">
+            <div class="mini bot">Em qual cidade e bairro você está?</div>
+            <div class="mini me">Recife, Boa Viagem.</div>
+          </div>
+          <span class="step-num">1</span>
+          <h3>Você diz onde está</h3>
+          <p>Cidade ou bairro. É o que basta para o Solano saber de qual rede de saúde falar.</p>
+        </li>
+
+        <li class="step reveal">
+          <div class="mock mock-questions" aria-hidden="true">
+            <ul class="pills" data-questions>
+              <li class="on">Onde consigo me vacinar?</li>
+              <li>Como marco consulta na UBS?</li>
+              <li>Que documentos preciso levar?</li>
+              <li>A unidade tem acessibilidade?</li>
+            </ul>
+          </div>
+          <span class="step-num">2</span>
+          <h3>Pergunta o que precisa</h3>
+          <p>Vacinação, consulta na UBS, horários, documentos — em linguagem do dia a dia.</p>
+        </li>
+
+        <li class="step reveal">
+          <div class="mock mock-answer" aria-hidden="true">
+            <div class="answer">
+              <strong>UBS do bairro</strong>
+              <span>Seg a sex · 8h–16h</span>
+              <span>Documento com foto e cartão do SUS</span>
+              <span class="source">Fonte e data de atualização</span>
+            </div>
+          </div>
+          <span class="step-num">3</span>
+          <h3>Recebe o caminho</h3>
+          <p>Onde ir, o que levar e como agendar. Sempre com a fonte e quando a informação foi atualizada.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="memory-band" id="memoria" aria-labelledby="memoria-titulo">
+      <div class="wrap memory-grid">
+        <div class="reveal">
+          <p class="eyebrow">Memória compartilhada</p>
+          <h2 id="memoria-titulo">Moradores ajudam a manter tudo em dia. Com verificação.</h2>
+          <p class="body">
+            A memória guarda unidades, horários, acessibilidade e formas de agendamento.
+            Como no OpenStreetMap, quem vive ali pode sugerir correções — mas elas ficam
+            pendentes até serem verificadas. Relato da comunidade não vira informação oficial
+            automaticamente.
+          </p>
+        </div>
+
+        <div class="feed reveal" aria-hidden="true">
+          <div class="feed-head">
+            Sugestões de moradores
+          </div>
+          <ul class="feed-list" data-feed>
+            <li><span class="ini">L</span><span class="txt"><strong>Lu</strong> UBS agora abre às 7h</span><span class="state ok">verificada</span></li>
+            <li><span class="ini">C</span><span class="txt"><strong>Caio</strong> Rampa de acesso na entrada</span><span class="state ok">verificada</span></li>
+            <li><span class="ini">R</span><span class="txt"><strong>Rafa</strong> Agendamento também por telefone</span><span class="state">pendente</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap section" id="escopo" aria-labelledby="escopo-titulo">
+      <header class="section-head reveal">
+        <p class="eyebrow">Escopo</p>
+        <h2 id="escopo-titulo">Orienta o caminho. Não substitui o profissional de saúde.</h2>
+      </header>
+      <div class="scope">
+        <div class="scope-col reveal">
+          <h3>O Solano faz</h3>
+          <ul class="checks">
+            <li>Indica unidades, horários e acessibilidade</li>
+            <li>Explica como agendar e que documentos levar</li>
+            <li>Mostra a fonte e a data de cada informação</li>
+          </ul>
+        </div>
+        <div class="scope-col reveal">
+          <h3>O Solano não faz</h3>
+          <ul class="checks checks-no">
+            <li>Diagnóstico</li>
+            <li>Prescrição de medicamentos</li>
+            <li>Armazenamento de histórico clínico</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap section section-tight" id="regioes" aria-labelledby="regioes-titulo">
+      <header class="section-head reveal">
+        <p class="eyebrow">Visão de expansão</p>
+        <h2 id="regioes-titulo">Começa em uma cidade. Depois, um agente por região.</h2>
+        <p class="body">
+          O Solano começa pequeno: uma cidade e um fluxo — encontrar uma UBS e entender como
+          acessar o atendimento. Depois, as cinco regiões do Brasil, cada uma com seu agente.
+        </p>
+      </header>
+      <ul class="regions">
+        <li class="region reveal" style="--tone: var(--sul)">
+          <span class="dot"></span>
+          <h3>Sul</h3>
+          <p>Porto Alegre, Curitiba, Florianópolis</p>
+        </li>
+        <li class="region reveal" style="--tone: var(--sudeste)">
+          <span class="dot"></span>
+          <h3>Sudeste</h3>
+          <p>São Paulo, Rio de Janeiro, Belo Horizonte</p>
+        </li>
+        <li class="region reveal" style="--tone: var(--centro)">
+          <span class="dot"></span>
+          <h3>Centro-Oeste</h3>
+          <p>Brasília, Goiânia, Campo Grande</p>
+        </li>
+        <li class="region reveal" style="--tone: var(--norte)">
+          <span class="dot"></span>
+          <h3>Norte</h3>
+          <p>Manaus, Belém, Porto Velho</p>
+        </li>
+        <li class="region reveal" style="--tone: var(--nordeste)">
+          <span class="dot"></span>
+          <h3>Nordeste</h3>
+          <p>Salvador, Recife, Fortaleza</p>
+        </li>
+      </ul>
+    </section>
+
+
+    <section class="wrap closing reveal">
+      <h2>O código é aberto.</h2>
+      <p>Acompanhe o projeto, abra uma issue ou mande um pull request.</p>
+      <a class="button" href="https://github.com/moonixt/HackBrasil-Solano">Ver no GitHub</a>
+    </section>
+  </main>
+
+  <footer class="wrap site-footer">
+    <p>Solano · Orientação, não diagnóstico.</p>
+    <a href="https://github.com/moonixt/HackBrasil-Solano">github.com/moonixt/HackBrasil-Solano</a>
+  </footer>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

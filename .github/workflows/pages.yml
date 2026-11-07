@@ -1,0 +1,57 @@
+# Publica somente docs/ (a landing). Não inclui o backend.
+# A origem do Pages precisa estar em GitHub Actions. Quem grava isso
+# precisa administrar o repositório. O workflow dispara em push na
+# branch dev/moonixt; publicar antes do merge exige apontar o Pages
+# para uma branch que já tenha docs/index.html.
+
+name: Publicar página no GitHub Pages
+
+on:
+  push:
+    branches:
+      - dev/moonixt
+    paths:
+      - "docs/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Conferir a página estática
+        run: python3 scripts/check_landing.py
+
+  publicar:
+    needs: verificar
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+
+      - name: Enviar só a pasta docs
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - name: Publicar
+        id: deployment
+        uses: actions/deploy-pages@v4
