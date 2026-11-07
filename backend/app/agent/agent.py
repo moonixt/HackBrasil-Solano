@@ -17,7 +17,7 @@ from app.agent.keywords import detect_service, is_emergency
 from app.agent.llm import chat, llm_configured
 from app.agent.personas import REGIONAL_AGENTS
 from app.agent.retrieval import fetch_context
-from app.agent.tools import TOOL_SCHEMAS, ToolContext, run_tool, set_location
+from app.agent.tools import ToolContext, agent_tools, run_tool, set_location
 from app.db.models import HealthUnit, ServiceGuide, User
 from app.domain.location import guess_location
 from app import messages
@@ -25,6 +25,12 @@ from app import messages
 SOURCES_MARKER = "[FONTES]"
 # Caracteres de largura zero que o modelo às vezes emite em sequência.
 _INVISIBLE = re.compile("[\u200b-\u200f\u2060\ufeff]")
+# Marcas de citação do gpt-oss, como 【0†L4-L5】.
+_CITATION = re.compile("[ \t]*【[^】]*】")
+_TABLE_ROW = re.compile(r"^\s*\|.*\|\s*$")
+_RESULT_DOMAIN = re.compile("†([a-z0-9.-]+\\.[a-z]{2,})】", re.IGNORECASE)
+_URL_DOMAIN = re.compile(r"https?://([a-z0-9.-]+\.[a-z]{2,})", re.IGNORECASE)
+_SEARCH_ENGINES = {"exa.ai"}
 _MAX_ROUNDS = 4
 _FALLBACK_UNITS = 3
 
@@ -39,15 +45,19 @@ Como agir:
 - Para qualquer informação local (unidades, endereços, horários, como agendar, documentos), chame
   buscar_rede_de_saude e use só o que ela devolver. Se precisar da localização e ela for desconhecida,
   pergunte a cidade e o bairro.
-- Se a cidade não tiver dados, diga isso com franqueza e dê só a orientação geral do SUS (procurar a UBS
+- Se a cidade não tiver dados no Solano (ou faltar a informação pedida) e você tiver busca na web, pesquise.
+  Prefira sites oficiais (prefeitura, secretaria de saúde, gov.br). Diga que a informação veio da internet
+  e que é bom confirmar na unidade. Termine com uma linha "Fonte: <site> (<endereço>) · <data da publicação,
+  se houver>" para cada página que você realmente usou.
+- Sem dados e sem resultado na web, diga isso com franqueza e dê só a orientação geral do SUS (procurar a UBS
   mais próxima com documento com foto e Cartão SUS ou CPF; Disque Saúde 136), deixando claro que é geral.
 - Nunca invente nome de unidade, endereço, telefone ou horário.
 - Nunca faça diagnóstico, não interprete sintomas, não indique remédio nem dose. Em sinais de urgência,
   mande ligar 192 (SAMU) ou ir à UPA.
 - Se a pessoa corrigir ou acrescentar algo sobre uma unidade, chame registrar_sugestao e explique que
   fica pendente até ser verificada.
-- Se usar dados de buscar_rede_de_saude, termine com uma linha contendo só {SOURCES_MARKER}.
-  Não escreva fontes você mesmo.
+- Se usar dados de buscar_rede_de_saude, termine com uma linha contendo só {SOURCES_MARKER}
+  (o sistema troca pela fonte certa). Para esses dados, não escreva a fonte você mesmo.
 - Fora de saúde pública, diga com gentileza que só ajuda com isso.
 - Texto simples e curto, sem markdown (nada de asteriscos, # ou tabelas)."""
 
@@ -72,18 +82,48 @@ def _bullet(line: str) -> str:
     return line
 
 
-def clean_reply(reply: str, records: list[HealthUnit | ServiceGuide]) -> str:
-    """Texto simples para o Telegram, com as fontes reais no lugar do marcador.
+def _plain_lines(reply: str) -> list[str]:
+    """Markdown → texto simples: sem negrito, listas viram "•", tabelas viram uma linha por registro."""
+    lines: list[str] = []
+    in_table = False
+    for line in reply.splitlines():
+        if _TABLE_ROW.match(line):
+            cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+            # A primeira linha da tabela é o cabeçalho; a de traços é o separador.
+            if in_table and not all(set(cell) <= set("-: ") for cell in cells):
+                lines.append("• " + " – ".join(cell for cell in cells if cell))
+            in_table = True
+            continue
+        in_table = False
+        lines.append(_bullet(line.replace("**", "")))
+    return lines
 
-    O Telegram (sem parse_mode) mostra markdown como texto cru, e o modelo nem sempre
-    obedece ao pedido de não usar; linhas de fonte escritas pelo modelo são descartadas.
+
+def web_domains(reply: dict[str, Any]) -> set[str]:
+    """Sites que a busca na web do provedor devolveu nesta rodada (Groq: executed_tools)."""
+    domains: set[str] = set()
+    for executed in reply.get("executed_tools") or []:
+        output = str(executed.get("output") or "")
+        domains.update(_RESULT_DOMAIN.findall(output))
+        domains.update(_URL_DOMAIN.findall(output))
+    return {domain.removeprefix("www.").lower() for domain in domains} - _SEARCH_ENGINES
+
+
+def clean_reply(
+    reply: str, records: list[HealthUnit | ServiceGuide], searched_domains: set[str] = frozenset()
+) -> str:
+    """Texto simples para o Telegram, com fontes que dá para confirmar.
+
+    Fontes dos dados do Solano entram pelo marcador. Uma linha de fonte escrita pelo modelo
+    só fica se citar um site que a busca na web realmente devolveu nesta resposta.
     """
-    reply = _INVISIBLE.sub("", reply)
-    kept = [
-        _bullet(line.replace("**", ""))
-        for line in reply.splitlines()
-        if not line.strip().casefold().startswith("fonte")
-    ]
+    reply = _CITATION.sub("", _INVISIBLE.sub("", reply))
+    kept = []
+    for line in _plain_lines(reply):
+        if line.strip().casefold().startswith(("fonte", "• fonte")):
+            if not any(domain in line.casefold() for domain in searched_domains):
+                continue
+        kept.append(line.rstrip())
     text = "\n".join(kept).strip()
     if SOURCES_MARKER not in text:
         return text
@@ -97,13 +137,15 @@ async def _agent_reply(session: AsyncSession, user: User, text: str) -> str | No
         *memory.history(user.telegram_chat_id),
         {"role": "user", "content": text},
     ]
+    searched_domains: set[str] = set()
     for _ in range(_MAX_ROUNDS):
-        reply = await chat(conversation, TOOL_SCHEMAS)
+        reply = await chat(conversation, agent_tools())
         if reply is None:
             return None
+        searched_domains |= web_domains(reply)
         calls = reply.get("tool_calls") or []
         if not calls:
-            answer = clean_reply(reply.get("content") or "", ctx.records)
+            answer = clean_reply(reply.get("content") or "", ctx.records, searched_domains)
             return answer or None
         conversation.append({"role": "assistant", "content": reply.get("content") or "", "tool_calls": calls})
         for call in calls:

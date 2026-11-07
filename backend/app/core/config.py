@@ -33,6 +33,8 @@ class Settings(BaseSettings):
     llm_api_key: str | None = None
     llm_base_url: str = "https://api.groq.com/openai/v1"
     llm_model: str = "openai/gpt-oss-120b"
+    # Busca na web embutida do provedor (browser_search da Groq). Desligue para outros provedores.
+    llm_web_search: bool = True
 
     # Token do painel de revisão de sugestões (/admin/*). Sem valor, a API fica desligada (503).
     admin_token: str | None = None

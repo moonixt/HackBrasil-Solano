@@ -13,6 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.agent.personas import REGIONAL_AGENTS
 from app.agent.retrieval import fetch_context
+from app.core.config import get_settings
 from app.db.models import HealthUnit, ServiceGuide, Suggestion, User
 from app.domain.enums import Service
 from app.domain.regions import UF_TO_REGION
@@ -169,6 +170,12 @@ TOOLS: dict[str, Tool] = {
 }
 
 TOOL_SCHEMAS = [tool.schema for tool in TOOLS.values()]
+# Busca na web executada pelo próprio provedor (Groq, modelos gpt-oss): não passa por run_tool.
+_WEB_SEARCH = {"type": "browser_search"}
+
+
+def agent_tools() -> list[dict[str, Any]]:
+    return [*TOOL_SCHEMAS, _WEB_SEARCH] if get_settings().llm_web_search else TOOL_SCHEMAS
 
 
 async def run_tool(ctx: ToolContext, name: str, raw_arguments: str | None) -> dict[str, Any]:

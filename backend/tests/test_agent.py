@@ -221,3 +221,40 @@ async def test_tools_reject_bad_arguments_with_a_readable_error(session) -> None
     assert "erro" in await run_tool(ctx, "buscar_rede_de_saude", "{}")
     assert "erro" in await run_tool(ctx, "nao_existe", "{}")
     assert "erro" in await run_tool(ctx, "salvar_localizacao", "{nao é json")
+
+
+async def test_web_answer_keeps_only_sources_the_search_returned(session, fake_telegram_client, monkeypatch) -> None:
+    session.add(User(telegram_chat_id=3011, city="Osasco", uf="SP", region=Region.SUDESTE))
+    await session.commit()
+    search_output = "L4: 【0†Campanha de vacinação†osasco.sp.gov.br】\nL5: URL: https://exa.ai/search?q=vacina"
+    _scripted_llm(
+        monkeypatch,
+        {
+            "role": "assistant",
+            "content": (
+                "Segundo a prefeitura, todas as UBS vacinam 【0†L4】.\n"
+                "| Tipo | Unidade |\n|---|---|\n| UBS | Maria Pia |\n"
+                "Fonte: Prefeitura de Osasco (osasco.sp.gov.br) · 10/04/2026\n"
+                "Fonte: Blog qualquer (exemplo.com)"
+            ),
+            "executed_tools": [{"type": "browser_search", "output": search_output}],
+        },
+    )
+
+    reply = await _say(session, fake_telegram_client, 3011, "onde me vacino?")
+
+    assert reply == (
+        "Segundo a prefeitura, todas as UBS vacinam.\n"
+        "• UBS – Maria Pia\n"
+        "Fonte: Prefeitura de Osasco (osasco.sp.gov.br) · 10/04/2026"
+    )
+
+
+def test_web_search_tool_is_offered_only_when_enabled(monkeypatch) -> None:
+    from app.agent.tools import agent_tools
+
+    settings = get_settings()
+    monkeypatch.setattr(settings, "llm_web_search", True)
+    assert {"type": "browser_search"} in agent_tools()
+    monkeypatch.setattr(settings, "llm_web_search", False)
+    assert {"type": "browser_search"} not in agent_tools()

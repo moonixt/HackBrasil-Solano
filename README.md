@@ -96,6 +96,7 @@ Além de `DATABASE_URL`, o `.env.example` traz (todas opcionais, comentadas lá)
 
 - `TELEGRAM_BOT_TOKEN` e `TELEGRAM_WEBHOOK_SECRET` — bot do Telegram e o segredo do webhook.
 - `LLM_API_KEY`, `LLM_BASE_URL` e `LLM_MODEL` — o LLM do agente, por qualquer API compatível com a da OpenAI (chat completions com tools). Default: Groq com `openai/gpt-oss-120b`. Sem chave, ou se a API falhar, o bot responde pelos dados com o formatador de fallback (por palavra-chave). No plano gratuito da Groq o limite é 8.000 tokens/minuto, o que dá umas 3 a 4 perguntas por minuto.
+- `LLM_WEB_SEARCH` — liga a busca na web embutida da Groq (`browser_search`, default `true`). O agente consulta primeiro os dados do Solano e só busca na web quando a cidade não tem dados; uma busca custa uns 5.000 tokens (cerca de uma por minuto no plano gratuito). Linhas de fonte da web só aparecem se citarem um site que a busca realmente devolveu.
 - `ADMIN_TOKEN` — sem ele, `/admin/*` responde `503` (painel desligado).
 
 ### Dados de exemplo (seed)
@@ -111,7 +112,7 @@ O seed faz upsert idempotente por `external_key` — rodar de novo atualiza os m
 
 ### Telegram
 
-O bot é um agente: toda mensagem vai ao LLM, que usa três ferramentas (`salvar_localizacao`, `buscar_rede_de_saude`, `registrar_sugestao`, em `app/agent/tools.py`). Não há cadastro obrigatório; o telefone é opcional, pelo botão do `/start`. A conversa fica só em memória, por 30 minutos (`app/agent/memory.py`), e nunca vai para o banco.
+O bot é um agente: toda mensagem vai ao LLM, que usa três ferramentas (`salvar_localizacao`, `buscar_rede_de_saude`, `registrar_sugestao`, em `app/agent/tools.py`) e a busca na web do provedor. Não há cadastro obrigatório; o telefone é opcional, pelo botão do `/start`. A conversa fica só em memória, por 30 minutos (`app/agent/memory.py`), e nunca vai para o banco.
 
 Para testar localmente sem expor uma URL pública, use long polling (ele mesmo derruba um webhook configurado antes de começar):
 
