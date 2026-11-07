@@ -1,5 +1,6 @@
 from app.db.models import User
 from app.domain.enums import OnboardingStep
+from app.domain.location import LocationGuess
 from app.domain.regions import Region
 from app.onboarding.state_machine import (
     ONBOARDING_TRANSITIONS,
@@ -49,7 +50,8 @@ def test_awaiting_contact_rejects_invalid_phone_and_keeps_asking() -> None:
 def test_awaiting_city_sets_region_from_uf() -> None:
     user = _user(OnboardingStep.AWAITING_CITY)
 
-    ONBOARDING_TRANSITIONS[OnboardingStep.AWAITING_CITY](user, Incoming(text="Recife, PE", contact=None))
+    location = LocationGuess(city="Recife", uf="PE")
+    ONBOARDING_TRANSITIONS[OnboardingStep.AWAITING_CITY](user, Incoming("Recife, PE", None, location))
 
     assert user.city == "Recife"
     assert user.uf == "PE"
@@ -64,6 +66,31 @@ def test_awaiting_city_rejects_invalid_format() -> None:
 
     assert user.city is None
     assert user.onboarding_step == OnboardingStep.AWAITING_CITY
+
+
+def test_awaiting_city_with_only_a_state_asks_for_the_city_and_keeps_the_uf() -> None:
+    user = _user(OnboardingStep.AWAITING_CITY)
+    step = ONBOARDING_TRANSITIONS[OnboardingStep.AWAITING_CITY]
+
+    reply = step(user, Incoming("sp", None, LocationGuess(city=None, uf="SP")))
+    assert "SP" in reply.text
+    assert user.onboarding_step == OnboardingStep.AWAITING_CITY
+
+    step(user, Incoming("Campinas", None, LocationGuess(city="Campinas", uf=None)))
+    assert (user.city, user.uf, user.region) == ("Campinas", "SP", Region.SUDESTE)
+    assert user.onboarding_step == OnboardingStep.AWAITING_NEIGHBORHOOD
+
+
+def test_awaiting_city_with_neighborhood_skips_the_neighborhood_question() -> None:
+    user = _user(OnboardingStep.AWAITING_CITY)
+
+    reply = ONBOARDING_TRANSITIONS[OnboardingStep.AWAITING_CITY](
+        user, Incoming("moro em recife, boa viagem", None, LocationGuess("Recife", "PE", "Boa Viagem"))
+    )
+
+    assert user.neighborhood == "Boa Viagem"
+    assert user.onboarding_step == OnboardingStep.READY
+    assert "agente do Nordeste" in reply.text
 
 
 def test_awaiting_neighborhood_completes_onboarding_and_names_the_regional_agent() -> None:

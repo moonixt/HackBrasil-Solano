@@ -62,3 +62,22 @@ async def test_local_command_restarts_city_step_without_losing_phone(session, fa
     user = await _load_user(session, chat_id)
     assert user.onboarding_step == OnboardingStep.AWAITING_CITY
     assert user.phone == "+5581999998888"  # /local não refaz o cadastro de telefone
+
+
+async def test_free_text_location_is_understood_by_the_llm(session, fake_telegram_client, monkeypatch) -> None:
+    from app.agent import llm as agent_llm
+
+    async def fake_groq(*_args, **_kwargs) -> str:
+        return '{"cidade": "Recife", "uf": "PE", "bairro": "Boa Viagem"}'
+
+    monkeypatch.setattr(agent_llm, "call_groq", fake_groq)
+    monkeypatch.setattr(agent_llm.get_settings(), "groq_api_key", "chave-de-teste")
+
+    chat_id = 4321
+    await handle_update(text_update(chat_id, "/start"), session, fake_telegram_client)
+    await handle_update(contact_update(chat_id, "5581999998888", "Ana", user_id=chat_id), session, fake_telegram_client)
+    await handle_update(text_update(chat_id, "moro em recife, perto da praia de boa viagem"), session, fake_telegram_client)
+
+    user = (await session.execute(select(User).where(User.telegram_chat_id == chat_id))).scalar_one()
+    assert (user.city, user.uf, user.neighborhood) == ("Recife", "PE", "Boa Viagem")
+    assert user.onboarding_step == OnboardingStep.READY

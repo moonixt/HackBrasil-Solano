@@ -7,6 +7,7 @@ from app.agent.service import answer as agent_answer
 from app.db.models import Suggestion, User
 from app.domain.enums import OnboardingStep
 from app.onboarding import messages
+from app.onboarding.extract import locate
 from app.onboarding.state_machine import (
     ONBOARDING_TRANSITIONS,
     ContactData,
@@ -59,6 +60,7 @@ async def handle_update(update: dict, session: AsyncSession, client: TelegramCli
 
     if text == "/local":
         user.onboarding_step = OnboardingStep.AWAITING_CITY
+        user.city = user.uf = user.neighborhood = None
         await session.commit()
         await _send(client, chat_id, messages.MSG_ASK_CITY, KeyboardAction.NONE)
         return
@@ -92,7 +94,12 @@ async def handle_update(update: dict, session: AsyncSession, client: TelegramCli
             last_name=message.contact.last_name,
             user_id=message.contact.user_id,
         )
-    incoming = Incoming(text=text or None, contact=contact)
+    location = None
+    if text and user.onboarding_step == OnboardingStep.AWAITING_CITY:
+        location = await locate(text)
+    elif text and user.onboarding_step == OnboardingStep.AWAITING_NEIGHBORHOOD:
+        location = await locate(text, context=f"resposta à pergunta: qual é o seu bairro em {user.city}, {user.uf}?")
+    incoming = Incoming(text=text or None, contact=contact, location=location)
     handler = ONBOARDING_TRANSITIONS[user.onboarding_step]
     reply = handler(user, incoming)
     await session.commit()

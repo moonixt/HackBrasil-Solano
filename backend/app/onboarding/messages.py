@@ -18,10 +18,12 @@ MSG_INVALID_PHONE = (
     "\"Compartilhar meu telefone\" para eu confirmar certinho."
 )
 
-MSG_ASK_CITY = "Perfeito! Agora me diz sua cidade e estado (ex.: Recife, PE)."
+MSG_ASK_CITY = "Perfeito! Agora me diz de onde você fala: cidade e estado, e o bairro se quiser (ex.: Recife, PE, Boa Viagem)."
+
+MSG_ONLY_UF = "Beleza, {uf}! E qual é a sua cidade?"
 
 MSG_INVALID_CITY = (
-    "Não entendi a cidade. Manda no formato \"Cidade, UF\" (ex.: Recife, PE)."
+    "Não consegui entender a cidade. Me diz a cidade e o estado (ex.: Recife, PE)."
 )
 
 MSG_ASK_NEIGHBORHOOD = "E qual é o seu bairro?"

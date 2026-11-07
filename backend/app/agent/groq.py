@@ -12,6 +12,8 @@ async def call_groq(
     system_prompt: str,
     question: str,
     http_client: httpx.AsyncClient | None = None,
+    *,
+    json_mode: bool = False,
 ) -> str:
     payload = {
         "model": model,
@@ -20,8 +22,10 @@ async def call_groq(
             {"role": "user", "content": question},
         ],
         "max_completion_tokens": _MAX_TOKENS,
-        "temperature": 0.3,
+        "temperature": 0 if json_mode else 0.3,
     }
+    if json_mode:
+        payload["response_format"] = {"type": "json_object"}
     headers = {"Authorization": f"Bearer {api_key}"}
     if http_client is None:
         async with httpx.AsyncClient(timeout=30.0) as client:

@@ -144,13 +144,13 @@ async def test_claude_failure_still_answers_from_the_records(
     import anthropic
     import httpx
 
-    from app.agent import service as agent_service
+    from app.agent import llm as agent_llm
 
     async def failing_claude(*_args, **_kwargs) -> str:
         raise anthropic.APIConnectionError(request=httpx.Request("POST", "https://api.anthropic.com"))
 
-    monkeypatch.setattr(agent_service, "call_claude", failing_claude)
-    monkeypatch.setattr(agent_service.get_settings(), "anthropic_api_key", "chave-de-teste")
+    monkeypatch.setattr(agent_llm, "call_claude", failing_claude)
+    monkeypatch.setattr(agent_llm.get_settings(), "anthropic_api_key", "chave-de-teste")
 
     chat_id = 2011
     await _ready_user_in_recife(session, chat_id)
@@ -180,13 +180,13 @@ async def test_groq_failure_still_answers_from_the_records(
 ) -> None:
     import httpx
 
-    from app.agent import service as agent_service
+    from app.agent import llm as agent_llm
 
     async def failing_groq(*_args, **_kwargs) -> str:
         raise httpx.ConnectError("sem rede")
 
-    settings = agent_service.get_settings()
-    monkeypatch.setattr(agent_service, "call_groq", failing_groq)
+    settings = agent_llm.get_settings()
+    monkeypatch.setattr(agent_llm, "call_groq", failing_groq)
     monkeypatch.setattr(settings, "anthropic_api_key", None)
     monkeypatch.setattr(settings, "groq_api_key", "chave-de-teste")
 
@@ -203,13 +203,13 @@ async def test_groq_failure_still_answers_from_the_records(
 
 
 async def _answer_with_fake_groq(session, fake_telegram_client, monkeypatch, chat_id: int, model_reply: str) -> str:
-    from app.agent import service as agent_service
+    from app.agent import llm as agent_llm
 
     async def fake_groq(*_args, **_kwargs) -> str:
         return model_reply
 
-    monkeypatch.setattr(agent_service, "call_groq", fake_groq)
-    monkeypatch.setattr(agent_service.get_settings(), "groq_api_key", "chave-de-teste")
+    monkeypatch.setattr(agent_llm, "call_groq", fake_groq)
+    monkeypatch.setattr(agent_llm.get_settings(), "groq_api_key", "chave-de-teste")
 
     await _ready_user_in_recife(session, chat_id)
     await _seed_recife_unit(session)

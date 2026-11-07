@@ -11,7 +11,7 @@ from enum import Enum
 from app.agent.personas import REGIONAL_AGENTS
 from app.db.models import User
 from app.domain.enums import OnboardingStep
-from app.domain.location import parse_city_uf
+from app.domain.location import LocationGuess
 from app.domain.phone import normalize_br_phone
 from app.domain.regions import UF_TO_REGION
 from app.onboarding import messages
@@ -35,6 +35,7 @@ class ContactData:
 class Incoming:
     text: str | None
     contact: ContactData | None
+    location: LocationGuess | None = None
 
 
 @dataclass(frozen=True)
@@ -58,28 +59,46 @@ def _handle_awaiting_contact(user: User, incoming: Incoming) -> OnboardingReply:
     return OnboardingReply(messages.MSG_ASK_CITY, KeyboardAction.REMOVE)
 
 
+def _finish(user: User) -> OnboardingReply:
+    user.onboarding_step = OnboardingStep.READY
+    agent_name = REGIONAL_AGENTS[user.region].name
+    return OnboardingReply(messages.MSG_READY.format(agent_name=agent_name))
+
+
 def _handle_awaiting_city(user: User, incoming: Incoming) -> OnboardingReply:
-    parsed = parse_city_uf(incoming.text or "")
-    if parsed is None:
+    guess = incoming.location
+    if guess is None:
         return OnboardingReply(messages.MSG_INVALID_CITY)
 
-    city, uf = parsed
-    user.city = city
+    if guess.city is None:
+        if guess.uf is None:
+            return OnboardingReply(messages.MSG_INVALID_CITY)
+        # Só o estado ("sp"): guarda a UF para a próxima mensagem trazer só a cidade.
+        user.uf = guess.uf
+        return OnboardingReply(messages.MSG_ONLY_UF.format(uf=guess.uf))
+
+    uf = guess.uf or user.uf
+    if uf is None:
+        return OnboardingReply(messages.MSG_INVALID_CITY)
+
+    user.city = guess.city
     user.uf = uf
     user.region = UF_TO_REGION[uf]
+    if guess.neighborhood:
+        user.neighborhood = guess.neighborhood
+        return _finish(user)
     user.onboarding_step = OnboardingStep.AWAITING_NEIGHBORHOOD
     return OnboardingReply(messages.MSG_ASK_NEIGHBORHOOD)
 
 
 def _handle_awaiting_neighborhood(user: User, incoming: Incoming) -> OnboardingReply:
-    neighborhood = (incoming.text or "").strip()
+    guess = incoming.location
+    neighborhood = guess.neighborhood if guess and guess.neighborhood else (incoming.text or "").strip()
     if not neighborhood:
         return OnboardingReply(messages.MSG_ASK_NEIGHBORHOOD_AGAIN)
 
     user.neighborhood = neighborhood
-    user.onboarding_step = OnboardingStep.READY
-    agent_name = REGIONAL_AGENTS[user.region].name
-    return OnboardingReply(messages.MSG_READY.format(agent_name=agent_name))
+    return _finish(user)
 
 
 ONBOARDING_TRANSITIONS: dict[OnboardingStep, Callable[[User, Incoming], OnboardingReply]] = {
