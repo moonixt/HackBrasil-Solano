@@ -77,6 +77,9 @@ async def handle_update(update: dict, session: AsyncSession, client: TelegramCli
         return
 
     if user.onboarding_step == OnboardingStep.READY:
+        if not text:
+            await _send(client, chat_id, messages.MSG_HELP, KeyboardAction.NONE)
+            return
         reply_text = await agent_answer(session, user, text)
         await _send(client, chat_id, reply_text, KeyboardAction.NONE)
         return

@@ -44,11 +44,11 @@ async def fetch_context(session: AsyncSession, user: User, service: Service | No
     if service is not None:
         units_query = units_query.where(HealthUnit.services.any(service.value))
 
-    neighborhood = user.neighborhood
     result = await session.execute(units_query.order_by(HealthUnit.id))
     units = list(result.scalars().all())
-    if neighborhood:
-        units.sort(key=lambda unit: unit.neighborhood != neighborhood)
+    if user.neighborhood:
+        home = normalize_city(user.neighborhood)
+        units.sort(key=lambda unit: normalize_city(unit.neighborhood or "") != home)
     units = units[:_MAX_UNITS]
 
     guide: ServiceGuide | None = None

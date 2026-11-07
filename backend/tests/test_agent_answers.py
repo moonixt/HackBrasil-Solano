@@ -106,3 +106,70 @@ async def test_emergency_phrase_returns_samu_and_no_unit(session, fake_telegram_
     reply = fake_telegram_client.sent[-1].text
     assert "192" in reply
     assert "UBS Teste" not in reply
+
+
+async def _seed_unit_in(session, key: str, name: str, neighborhood: str) -> None:
+    session.add(
+        HealthUnit(
+            external_key=key,
+            name=name,
+            kind="UBS",
+            city="Recife",
+            city_normalized="recife",
+            uf="PE",
+            neighborhood=neighborhood,
+            services=[Service.VACINACAO.value],
+            source="Fonte de teste",
+            updated_at=date(2026, 10, 15),
+        )
+    )
+
+
+async def test_neighborhood_match_ignores_case_and_accents(session, fake_telegram_client) -> None:
+    chat_id = 2010
+    await _ready_user_in_recife(session, chat_id, neighborhood="  varzea ")
+    await _seed_unit_in(session, "a-boa-viagem", "UBS Primeira Boa Viagem", "Boa Viagem")
+    await _seed_unit_in(session, "b-varzea", "UBS Da Várzea", "Várzea")
+    await session.commit()
+
+    await handle_update(text_update(chat_id, "onde tem vacina?"), session, fake_telegram_client)
+
+    reply = fake_telegram_client.sent[-1].text
+    assert reply.index("UBS Da Várzea") < reply.index("UBS Primeira Boa Viagem")
+
+
+async def test_claude_failure_still_answers_from_the_records(
+    session, fake_telegram_client, monkeypatch
+) -> None:
+    import anthropic
+    import httpx
+
+    from app.agent import service as agent_service
+
+    async def failing_claude(*_args, **_kwargs) -> str:
+        raise anthropic.APIConnectionError(request=httpx.Request("POST", "https://api.anthropic.com"))
+
+    monkeypatch.setattr(agent_service, "call_claude", failing_claude)
+    monkeypatch.setattr(agent_service.get_settings(), "anthropic_api_key", "chave-de-teste")
+
+    chat_id = 2011
+    await _ready_user_in_recife(session, chat_id)
+    await _seed_recife_unit(session)
+    await session.commit()
+
+    await handle_update(text_update(chat_id, "onde consigo me vacinar?"), session, fake_telegram_client)
+
+    reply = fake_telegram_client.sent[-1].text
+    assert "UBS Teste Boa Viagem" in reply
+    assert "Fonte:" in reply
+
+
+async def test_non_text_message_after_onboarding_gets_help(session, fake_telegram_client) -> None:
+    chat_id = 2012
+    await _ready_user_in_recife(session, chat_id)
+    await session.commit()
+
+    sticker = {"update_id": 9, "message": {"message_id": 9, "chat": {"id": chat_id}, "from": {"id": chat_id}}}
+    await handle_update(sticker, session, fake_telegram_client)
+
+    assert "/ajuda" in fake_telegram_client.sent[-1].text

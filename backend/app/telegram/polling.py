@@ -6,6 +6,8 @@ Uso: uv run python -m app.telegram.polling
 import asyncio
 import logging
 
+import httpx
+
 from app.core.config import get_settings
 from app.db.session import async_session_factory
 from app.telegram.client import TelegramClient
@@ -25,7 +27,12 @@ async def run() -> None:
     logger.info("Polling do Solano iniciado")
     try:
         while True:
-            updates = await client.get_updates(offset=offset, timeout=30)
+            try:
+                updates = await client.get_updates(offset=offset, timeout=30)
+            except httpx.HTTPError as exc:
+                logger.warning("getUpdates falhou (%s), tentando de novo", type(exc).__name__)
+                await asyncio.sleep(3)
+                continue
             for update in updates:
                 offset = update["update_id"] + 1
                 async with async_session_factory() as session:
@@ -43,6 +50,8 @@ async def run() -> None:
 
 def main() -> None:
     logging.basicConfig(level=logging.INFO)
+    # O httpx loga a URL de cada request em INFO, e a URL da Bot API carrega o token.
+    logging.getLogger("httpx").setLevel(logging.WARNING)
     asyncio.run(run())
 
 

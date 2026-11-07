@@ -1,5 +1,8 @@
 """Orquestra a resposta: gate de emergência → busca estruturada → Claude ou fallback."""
 
+import logging
+
+import anthropic
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.agent.claude import call_claude
@@ -10,6 +13,8 @@ from app.agent.retrieval import fetch_context
 from app.core.config import get_settings
 from app.db.models import User
 from app.onboarding.messages import EMERGENCY_REPLY, NOT_COVERED_MESSAGE
+
+logger = logging.getLogger(__name__)
 
 
 async def answer(session: AsyncSession, user: User, question: str) -> str:
@@ -24,6 +29,14 @@ async def answer(session: AsyncSession, user: User, question: str) -> str:
     settings = get_settings()
     if settings.anthropic_api_key:
         system_prompt = build_system_prompt(user.region, context)
-        return await call_claude(settings.anthropic_api_key, settings.anthropic_model, system_prompt, question)
+        try:
+            reply = await call_claude(
+                settings.anthropic_api_key, settings.anthropic_model, system_prompt, question
+            )
+        except anthropic.APIError as exc:
+            logger.warning("Claude indisponível, usando a resposta a partir dos dados: %s", type(exc).__name__)
+        else:
+            if reply.strip():
+                return reply
 
     return format_fallback_answer(context)
