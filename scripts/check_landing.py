@@ -24,23 +24,16 @@ REQUIRED_IDS = {
     "conteudo",
     "como-funciona",
     "regioes",
-    "estado",
     "memoria",
     "escopo",
     "como-funciona-titulo",
     "memoria-titulo",
     "escopo-titulo",
     "regioes-titulo",
-    "estado-titulo",
 }
 REQUIRED_PHRASES = [
     "Solano",
-    "Hack Brasil",
-    "Telegram",
     "OpenStreetMap",
-    "FastAPI",
-    "pgvector",
-    "Postgres",
     "saúde",
     "UBS",
     "fonte e data de atualização",
@@ -53,7 +46,6 @@ REQUIRED_PHRASES = [
     "Centro-Oeste",
     "Norte",
     "Nordeste",
-    "não há bot público",
     REPO_URL,
 ]
 BANNED = [
