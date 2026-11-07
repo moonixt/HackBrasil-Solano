@@ -1,7 +1,7 @@
-"""Base declarativa para os modelos futuros.
+"""Base declarativa compartilhada pelos modelos em app.db.models.
 
-Tabelas de domínio (usuários, regiões, memória compartilhada) entram nas
-issues seguintes. Esta base existe para o Alembic enxergar o metadata.
+Existe como módulo próprio para o Alembic enxergar o metadata sem
+importar os modelos (e os módulos de domínio que eles trazem) direto.
 """
 
 from sqlalchemy.orm import DeclarativeBase

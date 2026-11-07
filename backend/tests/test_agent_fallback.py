@@ -7,40 +7,40 @@ from app.domain.enums import Service
 
 
 def _unit(**overrides) -> HealthUnit:
-    defaults = dict(
-        external_key="unit-1",
-        name="UBS Exemplo Boa Viagem",
-        kind="UBS",
-        city="Recife",
-        city_normalized="recife",
-        uf="PE",
-        neighborhood="Boa Viagem",
-        address="Endereço de exemplo",
-        services=["vacinacao", "consulta"],
-        opening_hours="Seg a sex, 7h às 17h",
-        accessibility=None,
-        scheduling="Ordem de chegada",
-        source="Dados de exemplo",
-        source_url=None,
-        updated_at=date(2026, 11, 1),
-    )
+    defaults = {
+        "external_key": "unit-1",
+        "name": "UBS Exemplo Boa Viagem",
+        "kind": "UBS",
+        "city": "Recife",
+        "city_normalized": "recife",
+        "uf": "PE",
+        "neighborhood": "Boa Viagem",
+        "address": "Endereço de exemplo",
+        "services": ["vacinacao", "consulta"],
+        "opening_hours": "Seg a sex, 7h às 17h",
+        "accessibility": None,
+        "scheduling": "Ordem de chegada",
+        "source": "Dados de exemplo",
+        "source_url": None,
+        "updated_at": date(2026, 11, 1),
+    }
     defaults.update(overrides)
     return HealthUnit(**defaults)
 
 
 def _guide(**overrides) -> ServiceGuide:
-    defaults = dict(
-        external_key="guide-1",
-        city="Recife",
-        city_normalized="recife",
-        uf="PE",
-        service=Service.VACINACAO,
-        how_to="Procure a UBS do seu bairro, sem agendamento.",
-        documents=["documento com foto", "Cartão SUS"],
-        source="Dados de exemplo",
-        source_url=None,
-        updated_at=date(2026, 11, 1),
-    )
+    defaults = {
+        "external_key": "guide-1",
+        "city": "Recife",
+        "city_normalized": "recife",
+        "uf": "PE",
+        "service": Service.VACINACAO,
+        "how_to": "Procure a UBS do seu bairro, sem agendamento.",
+        "documents": ["documento com foto", "Cartão SUS"],
+        "source": "Dados de exemplo",
+        "source_url": None,
+        "updated_at": date(2026, 11, 1),
+    }
     defaults.update(overrides)
     return ServiceGuide(**defaults)
 

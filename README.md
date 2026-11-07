@@ -80,7 +80,7 @@ uv run alembic upgrade head
 uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-A migration inicial habilita a extensão `vector`.
+As migrations habilitam a extensão `vector` e criam o schema de saúde: usuários (com o passo do onboarding), unidades, guias de serviço e sugestões.
 
 Confira o healthcheck:
 
@@ -89,6 +89,57 @@ curl -s http://127.0.0.1:8000/health
 ```
 
 Com o Postgres no ar e as migrations aplicadas, a resposta é `{"status":"ok","database":"connected"}`. Se o banco estiver fora, a rota responde `503` com `"database":"disconnected"`.
+
+### Variáveis de ambiente
+
+Além de `DATABASE_URL`, o `.env.example` traz (todas opcionais, comentadas lá):
+
+- `TELEGRAM_BOT_TOKEN` e `TELEGRAM_WEBHOOK_SECRET` — bot do Telegram e o segredo do webhook.
+- `ANTHROPIC_API_KEY` e `ANTHROPIC_MODEL` — sem chave, o agente responde pelo formatador de fallback (determinístico, por palavra-chave); com chave, usa o Claude (default `claude-sonnet-5`).
+- `ADMIN_TOKEN` — sem ele, `/admin/*` responde `503` (painel desligado).
+
+### Dados de exemplo (seed)
+
+O piloto é Recife-PE, com dados de exemplo (nomes e endereços fictícios — trocar pela fonte oficial da Secretaria de Saúde antes de usar em produção):
+
+```bash
+cd backend
+uv run python -m app.seed data/recife_exemplo.json
+```
+
+O seed faz upsert idempotente por `external_key` — rodar de novo atualiza os mesmos registros, sem duplicar.
+
+### Telegram
+
+Para testar localmente sem expor uma URL pública, use long polling (ele mesmo derruba um webhook configurado antes de começar):
+
+```bash
+cd backend
+uv run python -m app.telegram.polling
+```
+
+Em produção (ou para testar o webhook), configure `TELEGRAM_WEBHOOK_SECRET` e aponte o bot para a API já no ar:
+
+```bash
+cd backend
+uv run python -m app.telegram.set_webhook https://sua-url-publica.exemplo
+```
+
+A rota `POST /telegram/webhook` só aceita requisições com o header `X-Telegram-Bot-Api-Secret-Token` igual a `TELEGRAM_WEBHOOK_SECRET`; qualquer outro valor recebe `403`.
+
+### Revisão de sugestões (admin)
+
+Moradores podem sugerir correções pelo comando `/sugerir <texto>` no bot — a sugestão fica `pending` e nunca é usada numa resposta do agente até ser revisada. Com `ADMIN_TOKEN` configurado:
+
+```bash
+curl -s -H "X-Admin-Token: $ADMIN_TOKEN" http://127.0.0.1:8000/admin/suggestions?status=pending
+
+curl -s -X POST -H "X-Admin-Token: $ADMIN_TOKEN" -H "Content-Type: application/json" \
+  -d '{"status": "verified"}' \
+  http://127.0.0.1:8000/admin/suggestions/1/review
+```
+
+Verificar uma sugestão não edita a unidade automaticamente — alguém edita o arquivo de dados e reexecuta o seed.
 
 Testes (o Postgres precisa estar no ar, com `alembic upgrade head` já executado):
 

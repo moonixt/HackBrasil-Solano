@@ -9,7 +9,7 @@ from datetime import date, datetime
 
 from sqlalchemy import BigInteger, Date, DateTime, ForeignKey, String, Text, func
 from sqlalchemy.dialects.postgresql import ARRAY
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
 from app.db.types import pg_enum
@@ -59,9 +59,6 @@ class HealthUnit(Base):
     source_url: Mapped[str | None] = mapped_column(Text)
     updated_at: Mapped[date] = mapped_column(Date, nullable=False)
 
-    def offers(self, service: Service) -> bool:
-        return service.value in self.services
-
 
 class ServiceGuide(Base):
     __tablename__ = "service_guides"
@@ -95,6 +92,3 @@ class Suggestion(Base):
     )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
-
-    user: Mapped[User] = relationship()
-    unit: Mapped[HealthUnit | None] = relationship()
