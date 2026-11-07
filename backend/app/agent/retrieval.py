@@ -13,19 +13,19 @@ from app.db.models import HealthUnit, ServiceGuide, User
 from app.domain.enums import Service
 from app.domain.text import normalize_city
 
-_MAX_UNITS = 3
-
 
 @dataclass(frozen=True)
 class RetrievedContext:
     covered: bool
     units: list[HealthUnit]
-    guide: ServiceGuide | None
+    guides: list[ServiceGuide]
 
 
-async def fetch_context(session: AsyncSession, user: User, service: Service | None) -> RetrievedContext:
+async def fetch_context(
+    session: AsyncSession, user: User, service: Service | None, max_units: int
+) -> RetrievedContext:
     if user.city is None or user.uf is None:
-        return RetrievedContext(covered=False, units=[], guide=None)
+        return RetrievedContext(covered=False, units=[], guides=[])
 
     city_key = normalize_city(user.city)
 
@@ -35,7 +35,7 @@ async def fetch_context(session: AsyncSession, user: User, service: Service | No
         )
     )
     if not has_coverage:
-        return RetrievedContext(covered=False, units=[], guide=None)
+        return RetrievedContext(covered=False, units=[], guides=[])
 
     units_query = select(HealthUnit).where(
         HealthUnit.city_normalized == city_key,
@@ -49,19 +49,14 @@ async def fetch_context(session: AsyncSession, user: User, service: Service | No
     if user.neighborhood:
         home = normalize_city(user.neighborhood)
         units.sort(key=lambda unit: normalize_city(unit.neighborhood or "") != home)
-    units = units[:_MAX_UNITS]
+    units = units[:max_units]
 
-    guide: ServiceGuide | None = None
+    guides_query = select(ServiceGuide).where(
+        ServiceGuide.city_normalized == city_key,
+        ServiceGuide.uf == user.uf,
+    )
     if service is not None:
-        guide_result = await session.execute(
-            select(ServiceGuide)
-            .where(
-                ServiceGuide.city_normalized == city_key,
-                ServiceGuide.uf == user.uf,
-                ServiceGuide.service == service,
-            )
-            .limit(1)
-        )
-        guide = guide_result.scalar_one_or_none()
+        guides_query = guides_query.where(ServiceGuide.service == service)
+    guides_result = await session.execute(guides_query.order_by(ServiceGuide.id))
 
-    return RetrievedContext(covered=True, units=units, guide=guide)
+    return RetrievedContext(covered=True, units=units, guides=list(guides_result.scalars().all()))

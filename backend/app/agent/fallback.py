@@ -26,6 +26,8 @@ def _format_unit(unit: HealthUnit) -> str:
         lines.append(unit.scheduling)
     if unit.opening_hours:
         lines.append(f"Horário: {unit.opening_hours}")
+    if unit.accessibility:
+        lines.append(f"Acessibilidade: {unit.accessibility}")
     return "\n".join(lines)
 
 
@@ -36,20 +38,18 @@ def _format_guide(guide: ServiceGuide) -> str:
     return "\n".join(lines)
 
 
+def format_sources(context: RetrievedContext) -> str:
+    """Uma linha "Fonte: … · atualizado em …" por par distinto de fonte e data."""
+    records = [*context.units, *context.guides]
+    lines = dict.fromkeys(_format_source_line(record.source, record.updated_at) for record in records)
+    return "\n".join(lines)
+
+
 def format_fallback_answer(context: RetrievedContext) -> str:
-    guide = context.guide
-    if not context.units and guide is None:
+    if not context.units and not context.guides:
         return NO_MATCH_MESSAGE
 
     blocks = [_format_unit(unit) for unit in context.units]
-    if guide is not None:
-        blocks.append(_format_guide(guide))
-
-    sources: dict[str, str] = {}
-    for unit in context.units:
-        sources[unit.source] = _format_source_line(unit.source, unit.updated_at)
-    if guide is not None:
-        sources[guide.source] = _format_source_line(guide.source, guide.updated_at)
-
-    blocks.append("\n".join(sources.values()))
+    blocks.extend(_format_guide(guide) for guide in context.guides)
+    blocks.append(format_sources(context))
     return "\n\n".join(blocks)

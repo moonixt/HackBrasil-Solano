@@ -4,6 +4,7 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 
+from app.core.config import get_settings
 from app.db.session import async_session_factory, engine
 from app.main import app
 
@@ -13,6 +14,14 @@ _TABLES = ("suggestions", "service_guides", "health_units", "users")
 async def _truncate_all() -> None:
     async with engine.begin() as connection:
         await connection.execute(text(f"TRUNCATE TABLE {', '.join(_TABLES)} RESTART IDENTITY CASCADE"))
+
+
+@pytest.fixture(autouse=True)
+def _no_llm_keys(monkeypatch: pytest.MonkeyPatch) -> None:
+    """O .env de quem roda os testes pode ter chaves reais; os testes nunca chamam LLM pela rede."""
+    settings = get_settings()
+    monkeypatch.setattr(settings, "anthropic_api_key", None)
+    monkeypatch.setattr(settings, "groq_api_key", None)
 
 
 @pytest.fixture

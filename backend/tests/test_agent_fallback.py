@@ -46,7 +46,7 @@ def _guide(**overrides) -> ServiceGuide:
 
 
 def test_format_fallback_answer_includes_unit_and_source_line() -> None:
-    context = RetrievedContext(covered=True, units=[_unit()], guide=None)
+    context = RetrievedContext(covered=True, units=[_unit()], guides=[])
 
     text = format_fallback_answer(context)
 
@@ -55,7 +55,7 @@ def test_format_fallback_answer_includes_unit_and_source_line() -> None:
 
 
 def test_format_fallback_answer_includes_guide_documents() -> None:
-    context = RetrievedContext(covered=True, units=[_unit()], guide=_guide())
+    context = RetrievedContext(covered=True, units=[_unit()], guides=[_guide()])
 
     text = format_fallback_answer(context)
 
@@ -64,7 +64,7 @@ def test_format_fallback_answer_includes_guide_documents() -> None:
 
 
 def test_format_fallback_answer_deduplicates_identical_sources() -> None:
-    context = RetrievedContext(covered=True, units=[_unit()], guide=_guide())
+    context = RetrievedContext(covered=True, units=[_unit()], guides=[_guide()])
 
     text = format_fallback_answer(context)
 
@@ -72,7 +72,7 @@ def test_format_fallback_answer_deduplicates_identical_sources() -> None:
 
 
 def test_format_fallback_answer_with_no_units_or_guide_says_no_match() -> None:
-    context = RetrievedContext(covered=True, units=[], guide=None)
+    context = RetrievedContext(covered=True, units=[], guides=[])
 
     text = format_fallback_answer(context)
 

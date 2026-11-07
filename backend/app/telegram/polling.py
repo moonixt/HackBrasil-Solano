@@ -22,7 +22,13 @@ async def run() -> None:
         raise RuntimeError("TELEGRAM_BOT_TOKEN não configurado")
 
     client = TelegramClient(settings.telegram_bot_token)
-    await client.delete_webhook()  # polling e webhook não coexistem na Bot API
+    while True:
+        try:
+            await client.delete_webhook()  # polling e webhook não coexistem na Bot API
+            break
+        except httpx.HTTPError as exc:
+            logger.warning("deleteWebhook falhou (%s), tentando de novo", type(exc).__name__)
+            await asyncio.sleep(3)
     offset: int | None = None
     logger.info("Polling do Solano iniciado")
     try:

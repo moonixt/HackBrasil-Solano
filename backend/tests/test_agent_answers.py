@@ -173,3 +173,81 @@ async def test_non_text_message_after_onboarding_gets_help(session, fake_telegra
     await handle_update(sticker, session, fake_telegram_client)
 
     assert "/ajuda" in fake_telegram_client.sent[-1].text
+
+
+async def test_groq_failure_still_answers_from_the_records(
+    session, fake_telegram_client, monkeypatch
+) -> None:
+    import httpx
+
+    from app.agent import service as agent_service
+
+    async def failing_groq(*_args, **_kwargs) -> str:
+        raise httpx.ConnectError("sem rede")
+
+    settings = agent_service.get_settings()
+    monkeypatch.setattr(agent_service, "call_groq", failing_groq)
+    monkeypatch.setattr(settings, "anthropic_api_key", None)
+    monkeypatch.setattr(settings, "groq_api_key", "chave-de-teste")
+
+    chat_id = 2013
+    await _ready_user_in_recife(session, chat_id)
+    await _seed_recife_unit(session)
+    await session.commit()
+
+    await handle_update(text_update(chat_id, "onde consigo me vacinar?"), session, fake_telegram_client)
+
+    reply = fake_telegram_client.sent[-1].text
+    assert "UBS Teste Boa Viagem" in reply
+    assert "Fonte:" in reply
+
+
+async def _answer_with_fake_groq(session, fake_telegram_client, monkeypatch, chat_id: int, model_reply: str) -> str:
+    from app.agent import service as agent_service
+
+    async def fake_groq(*_args, **_kwargs) -> str:
+        return model_reply
+
+    monkeypatch.setattr(agent_service, "call_groq", fake_groq)
+    monkeypatch.setattr(agent_service.get_settings(), "groq_api_key", "chave-de-teste")
+
+    await _ready_user_in_recife(session, chat_id)
+    await _seed_recife_unit(session)
+    await session.commit()
+
+    await handle_update(text_update(chat_id, "onde vacinar?"), session, fake_telegram_client)
+    return fake_telegram_client.sent[-1].text
+
+
+async def test_llm_sources_come_from_the_records_not_the_model(
+    session, fake_telegram_client, monkeypatch
+) -> None:
+    reply = await _answer_with_fake_groq(
+        session, fake_telegram_client, monkeypatch, 2014,
+        "Vá à UBS Teste Boa Viagem.\nFonte: inventada pelo modelo\n[FONTES]",
+    )
+
+    assert "inventada" not in reply
+    assert "[FONTES]" not in reply
+    assert reply.count("Fonte: Secretaria de Saúde do Recife (teste) · atualizado em 15/10/2026") == 1
+
+
+async def test_llm_reply_without_marker_gets_no_source_line(
+    session, fake_telegram_client, monkeypatch
+) -> None:
+    reply = await _answer_with_fake_groq(
+        session, fake_telegram_client, monkeypatch, 2015,
+        "Não posso indicar remédios. Procure a UBS mais próxima.",
+    )
+
+    assert reply == "Não posso indicar remédios. Procure a UBS mais próxima."
+
+
+async def test_llm_markdown_becomes_plain_text(session, fake_telegram_client, monkeypatch) -> None:
+    reply = await _answer_with_fake_groq(
+        session, fake_telegram_client, monkeypatch, 2016,
+        "Opções:\n* **UBS Teste Boa Viagem** – 7h às 17h\n[FONTES]",
+    )
+
+    assert "*" not in reply
+    assert "• UBS Teste Boa Viagem – 7h às 17h" in reply

@@ -5,6 +5,8 @@ from app.agent.retrieval import RetrievedContext
 from app.db.models import HealthUnit, ServiceGuide
 from app.domain.regions import Region
 
+SOURCES_MARKER = "[FONTES]"
+
 _SCOPE_RULES = (
     "Seu único assunto é orientação sobre a rede pública de saúde: onde encontrar "
     "unidades, como marcar consulta, documentos necessários e serviços disponíveis.\n"
@@ -12,9 +14,10 @@ _SCOPE_RULES = (
     "informação: responda SOMENTE com base nos registros abaixo.\n"
     "Se os registros não cobrirem a pergunta, diga isso e sugira procurar a UBS mais "
     "próxima ou ligar no Disque Saúde 136.\n"
-    "Termine toda resposta factual com uma linha \"Fonte: <fonte> · atualizado em "
-    "dd/mm/aaaa\" para cada registro que você usar.\n"
-    "Responda curto — é uma mensagem de Telegram, não um artigo."
+    f"Não escreva linhas de fonte. Se a resposta usar algum registro, termine com uma "
+    f"linha contendo só {SOURCES_MARKER} — o sistema troca pela fonte e data corretas.\n"
+    "Responda curto e em texto simples, sem markdown (nada de asteriscos, # ou tabelas): "
+    "é uma mensagem de Telegram, não um artigo."
 )
 
 
@@ -28,6 +31,8 @@ def _render_unit(unit: HealthUnit) -> str:
         parts.append(f"como agendar: {unit.scheduling}")
     if unit.opening_hours:
         parts.append(f"horário: {unit.opening_hours}")
+    if unit.accessibility:
+        parts.append(f"acessibilidade: {unit.accessibility}")
     parts.append(f"fonte: {unit.source} (atualizado em {unit.updated_at.strftime('%d/%m/%Y')})")
     return "; ".join(parts)
 
@@ -43,8 +48,7 @@ def _render_guide(guide: ServiceGuide) -> str:
 def build_system_prompt(region: Region, context: RetrievedContext) -> str:
     persona = REGIONAL_AGENTS[region]
     records = [_render_unit(unit) for unit in context.units]
-    if context.guide is not None:
-        records.append(_render_guide(context.guide))
+    records.extend(_render_guide(guide) for guide in context.guides)
     records_block = "\n".join(records) if records else "(nenhum registro encontrado)"
 
     return (

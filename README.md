@@ -95,7 +95,8 @@ Com o Postgres no ar e as migrations aplicadas, a resposta é `{"status":"ok","d
 Além de `DATABASE_URL`, o `.env.example` traz (todas opcionais, comentadas lá):
 
 - `TELEGRAM_BOT_TOKEN` e `TELEGRAM_WEBHOOK_SECRET` — bot do Telegram e o segredo do webhook.
-- `ANTHROPIC_API_KEY` e `ANTHROPIC_MODEL` — sem chave, o agente responde pelo formatador de fallback (determinístico, por palavra-chave); com chave, usa o Claude (default `claude-sonnet-5`).
+- `ANTHROPIC_API_KEY` e `ANTHROPIC_MODEL` — com chave, o agente redige a resposta com o Claude (default `claude-sonnet-5`).
+- `GROQ_API_KEY` e `GROQ_MODEL` — usados quando não há chave da Anthropic (default `openai/gpt-oss-120b`). Sem nenhuma das duas, ou se a API falhar, o agente responde pelo formatador de fallback (determinístico, por palavra-chave).
 - `ADMIN_TOKEN` — sem ele, `/admin/*` responde `503` (painel desligado).
 
 ### Dados de exemplo (seed)

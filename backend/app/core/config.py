@@ -32,6 +32,10 @@ class Settings(BaseSettings):
     anthropic_api_key: str | None = None
     anthropic_model: str = "claude-sonnet-5"
 
+    # Groq, usada quando não há chave da Anthropic.
+    groq_api_key: str | None = None
+    groq_model: str = "openai/gpt-oss-120b"
+
     # Token do painel de revisão de sugestões (/admin/*). Sem valor, a API fica desligada (503).
     admin_token: str | None = None
 
