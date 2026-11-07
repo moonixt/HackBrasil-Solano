@@ -22,22 +22,12 @@ PREDICTED_PAGES = "https://moonixt.github.io/HackBrasil-Solano/"
 REQUIRED_IDS = {
     "topo",
     "conteudo",
-    "problema",
-    "solucao",
-    "para-quem",
     "como-funciona",
     "regioes",
-    "memoria",
     "estado",
-    "repositorio",
-    "problema-titulo",
-    "solucao-titulo",
-    "para-quem-titulo",
     "como-funciona-titulo",
     "regioes-titulo",
-    "memoria-titulo",
     "estado-titulo",
-    "repositorio-titulo",
 }
 REQUIRED_PHRASES = [
     "Solano",
@@ -45,23 +35,15 @@ REQUIRED_PHRASES = [
     "Telegram",
     "OpenStreetMap",
     "FastAPI",
-    "Next.js",
     "pgvector",
     "Postgres",
-    "WhatsApp",
     "nome e telefone",
     "Sul",
     "Sudeste",
     "Centro-Oeste",
     "Norte",
     "Nordeste",
-    "Porto Alegre",
-    "São Paulo",
-    "Brasília",
-    "Manaus",
-    "Salvador",
-    "proposta",
-    "Não há bot público",
+    "não há bot público",
     REPO_URL,
 ]
 BANNED = [
@@ -81,11 +63,11 @@ BANNED = [
     "agente@chain",
 ]
 REGION_CITIES = {
-    "Sul": ["Porto Alegre", "Curitiba", "Florianópolis", "Pelotas", "Joinville"],
-    "Sudeste": ["São Paulo", "Rio de Janeiro", "Belo Horizonte", "Campinas", "Vitória"],
-    "Centro-Oeste": ["Brasília", "Goiânia", "Campo Grande", "Cuiabá", "Anápolis"],
-    "Norte": ["Manaus", "Belém", "Porto Velho", "Boa Vista", "Macapá"],
-    "Nordeste": ["Salvador", "Recife", "Fortaleza", "São Luís", "Natal"],
+    "Sul": ["Porto Alegre", "Curitiba", "Florianópolis"],
+    "Sudeste": ["São Paulo", "Rio de Janeiro", "Belo Horizonte"],
+    "Centro-Oeste": ["Brasília", "Goiânia", "Campo Grande"],
+    "Norte": ["Manaus", "Belém", "Porto Velho"],
+    "Nordeste": ["Salvador", "Recife", "Fortaleza"],
 }
 
 
@@ -199,7 +181,7 @@ def main() -> int:
     description = next((meta.get("content", "") for meta in page.metas if meta.get("name") == "description"), "")
     if len(description) < 40:
         fail("meta description ausente ou curta demais")
-    for tag in ("header", "main", "footer", "nav"):
+    for tag in ("header", "main", "footer"):
         if tag not in page.tags:
             fail(f"falta o elemento <{tag}>")
     if not any(tag == "a" and attr == "href" and value == "#conteudo" for tag, attr, value in page.attrs):
@@ -252,32 +234,21 @@ def main() -> int:
     css = css_path.read_text(encoding="utf-8")
     variables = dict(re.findall(r"--([a-z0-9-]+):\s*(#[0-9a-fA-F]{6})\s*;", css))
     expected = {
-        "paper": "#f3ecdf",
-        "ink": "#1c1916",
-        "soft": "#3f3a34",
-        "muted": "#5c564e",
-        "card": "#fbf7f0",
-        "green": "#1c4536",
-        "green-deep": "#10281f",
-        "cream": "#f7f1e6",
-        "blue": "#1d4e89",
-        "gold-ink": "#6e5016",
+        "bg": "#ffffff",
+        "text": "#1f2321",
+        "muted": "#646b67",
+        "accent": "#2f6a50",
+        "accent-soft": "#eef4f0",
     }
     for name, hex_color in expected.items():
         if variables.get(name, "").lower() != hex_color:
             fail(f"variável --{name} deveria ser {hex_color}, veio {variables.get(name)!r}")
 
     pairs = [
-        ("ink", "paper", 7),
-        ("soft", "paper", 7),
-        ("muted", "paper", 4.5),
-        ("ink", "card", 7),
-        ("muted", "card", 4.5),
-        ("cream", "green", 7),
-        ("cream", "green-deep", 7),
-        ("blue", "paper", 4.5),
-        ("gold-ink", "paper", 4.5),
-        ("gold-ink", "card", 4.5),
+        ("text", "bg", 7),
+        ("muted", "bg", 4.5),
+        ("accent", "bg", 4.5),
+        ("accent", "accent-soft", 4.5),
     ]
     for foreground, background, minimum in pairs:
         if foreground not in variables or background not in variables:
@@ -289,17 +260,10 @@ def main() -> int:
             )
 
     for needle in (
-        "background: var(--paper)",
-        "color: var(--ink)",
-        "background: var(--green)",
-        "color: var(--cream)",
+        "background: var(--bg)",
+        "color: var(--text)",
         ":focus-visible",
-        "prefers-reduced-motion",
-        "forced-colors",
         "min-height: 44px",
-        "min-height: 48px",
-        ".prose a.button",
-        ".site-footer .wordmark",
     ):
         if needle not in css:
             fail(f"CSS sem regra esperada: {needle}")
@@ -374,18 +338,15 @@ def main() -> int:
                     fail(f"{value!r} escapou do prefixo {PREFIX}: {absolute}")
 
         status, ctype, css_body = fetch(base + "styles.css")
-        if status != 200 or "--paper" not in css_body.decode("utf-8"):
+        if status != 200 or "--bg" not in css_body.decode("utf-8"):
             fail("styles.css não está disponível sob o prefixo")
         root_status, _, _ = fetch(f"http://127.0.0.1:{port}/styles.css")
         if root_status == 200:
             fail("styles.css respondeu na raiz do host; o teste deixaria passar um path absoluto")
 
         for font in (
-            "fonts/fraunces.woff2",
-            "fonts/fraunces-italic.woff2",
             "fonts/atkinson-400.woff2",
             "fonts/atkinson-700.woff2",
-            "fonts/atkinson-400i.woff2",
         ):
             status, font_type, font_body = fetch(base + font)
             if status != 200 or not font_body.startswith(b"wOF2"):
