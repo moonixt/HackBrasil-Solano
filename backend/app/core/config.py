@@ -24,6 +24,17 @@ class Settings(BaseSettings):
     app_name: str = "Solano"
     database_url: str = "postgresql+asyncpg://solano:solano@localhost:5432/solano"
 
+    # Bot do Telegram (api.telegram.org/bot<token>) e o segredo que valida o webhook.
+    telegram_bot_token: str | None = None
+    telegram_webhook_secret: str | None = None
+
+    # Claude (Anthropic). Sem chave, o agente usa o formatador determinístico de fallback.
+    anthropic_api_key: str | None = None
+    anthropic_model: str = "claude-sonnet-5"
+
+    # Token do painel de revisão de sugestões (/admin/*). Sem valor, a API fica desligada (503).
+    admin_token: str | None = None
+
     @field_validator("database_url")
     @classmethod
     def use_asyncpg_driver(cls, value: str) -> str:

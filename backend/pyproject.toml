@@ -1,12 +1,14 @@
 [project]
 name = "solano-backend"
 version = "0.1.0"
-description = "API do Solano (HackBrasil): agentes regionais com memória compartilhada."
+description = "API do Solano (HackBrasil): orientação sobre a rede pública de saúde por Telegram, por região."
 requires-python = ">=3.12"
 dependencies = [
     "alembic>=1.14",
+    "anthropic>=0.69",
     "asyncpg>=0.30",
     "fastapi>=0.115",
+    "httpx>=0.28",
     "pydantic-settings>=2.6",
     "sqlalchemy[asyncio]>=2.0.36",
     "uvicorn[standard]>=0.32",
@@ -14,7 +16,6 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "httpx>=0.28",
     "pytest>=8.3",
     "pytest-asyncio>=0.25",
 ]

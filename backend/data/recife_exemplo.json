@@ -1,0 +1,117 @@
+{
+  "health_units": [
+    {
+      "external_key": "recife-ubs-boa-viagem-exemplo",
+      "name": "UBS Exemplo Boa Viagem",
+      "kind": "UBS",
+      "city": "Recife",
+      "uf": "PE",
+      "neighborhood": "Boa Viagem",
+      "address": "Endereço de exemplo, Boa Viagem, Recife - PE",
+      "services": ["vacinacao", "consulta"],
+      "opening_hours": "Seg a sex, 7h às 17h",
+      "accessibility": "Acesso para cadeirantes",
+      "scheduling": "Chegar com documento e Cartão SUS; atendimento por ordem de chegada",
+      "source": "Dados de exemplo — substituir pela fonte oficial da Secretaria de Saúde",
+      "source_url": null,
+      "updated_at": "2026-10-15"
+    },
+    {
+      "external_key": "recife-usf-boa-viagem-exemplo",
+      "name": "USF Exemplo Boa Viagem Sul",
+      "kind": "USF",
+      "city": "Recife",
+      "uf": "PE",
+      "neighborhood": "Boa Viagem",
+      "address": "Endereço de exemplo, Boa Viagem, Recife - PE",
+      "services": ["vacinacao"],
+      "opening_hours": "Seg a sex, 7h às 16h",
+      "accessibility": "Acesso para cadeirantes",
+      "scheduling": "Vacinação por ordem de chegada, sem agendamento",
+      "source": "Dados de exemplo — substituir pela fonte oficial da Secretaria de Saúde",
+      "source_url": null,
+      "updated_at": "2026-10-15"
+    },
+    {
+      "external_key": "recife-ubs-casa-amarela-exemplo",
+      "name": "UBS Exemplo Casa Amarela",
+      "kind": "UBS",
+      "city": "Recife",
+      "uf": "PE",
+      "neighborhood": "Casa Amarela",
+      "address": "Endereço de exemplo, Casa Amarela, Recife - PE",
+      "services": ["vacinacao", "consulta"],
+      "opening_hours": "Seg a sex, 7h às 17h",
+      "accessibility": "Sem informação",
+      "scheduling": "Consultas agendadas por telefone",
+      "source": "Dados de exemplo — substituir pela fonte oficial da Secretaria de Saúde",
+      "source_url": null,
+      "updated_at": "2026-10-15"
+    },
+    {
+      "external_key": "recife-usf-varzea-exemplo",
+      "name": "USF Exemplo Várzea",
+      "kind": "USF",
+      "city": "Recife",
+      "uf": "PE",
+      "neighborhood": "Várzea",
+      "address": "Endereço de exemplo, Várzea, Recife - PE",
+      "services": ["consulta"],
+      "opening_hours": "Seg a sex, 8h às 17h",
+      "accessibility": "Acesso para cadeirantes",
+      "scheduling": "Consultas por ordem de chegada",
+      "source": "Dados de exemplo — substituir pela fonte oficial da Secretaria de Saúde",
+      "source_url": null,
+      "updated_at": "2026-10-15"
+    },
+    {
+      "external_key": "recife-upa-boa-vista-exemplo",
+      "name": "UPA Exemplo Boa Vista",
+      "kind": "UPA",
+      "city": "Recife",
+      "uf": "PE",
+      "neighborhood": "Boa Vista",
+      "address": "Endereço de exemplo, Boa Vista, Recife - PE",
+      "services": ["vacinacao", "consulta"],
+      "opening_hours": "24 horas",
+      "accessibility": "Acesso para cadeirantes",
+      "scheduling": "Atendimento por classificação de risco, sem agendamento",
+      "source": "Dados de exemplo — substituir pela fonte oficial da Secretaria de Saúde",
+      "source_url": null,
+      "updated_at": "2026-10-15"
+    }
+  ],
+  "service_guides": [
+    {
+      "external_key": "recife-guia-vacinacao-exemplo",
+      "city": "Recife",
+      "uf": "PE",
+      "service": "vacinacao",
+      "how_to": "Procure a UBS ou USF do seu bairro em horário de funcionamento. Não é preciso agendar.",
+      "documents": [
+        "documento com foto",
+        "Cartão SUS ou CPF",
+        "comprovante de residência",
+        "caderneta de vacinação"
+      ],
+      "source": "Dados de exemplo — substituir pela fonte oficial da Secretaria de Saúde",
+      "source_url": null,
+      "updated_at": "2026-10-15"
+    },
+    {
+      "external_key": "recife-guia-consulta-exemplo",
+      "city": "Recife",
+      "uf": "PE",
+      "service": "consulta",
+      "how_to": "Procure a UBS do seu bairro para marcar consulta. Algumas unidades atendem por ordem de chegada, outras agendam por telefone.",
+      "documents": [
+        "documento com foto",
+        "Cartão SUS ou CPF",
+        "comprovante de residência"
+      ],
+      "source": "Dados de exemplo — substituir pela fonte oficial da Secretaria de Saúde",
+      "source_url": null,
+      "updated_at": "2026-10-15"
+    }
+  ]
+}
