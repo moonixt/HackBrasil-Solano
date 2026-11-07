@@ -13,61 +13,191 @@
   <meta property="og:locale" content="pt_BR">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
+  <script>document.documentElement.classList.add("js");</script>
 </head>
 <body>
   <a class="skip" href="#conteudo">Ir para o conteúdo</a>
 
   <header class="wrap site-header" id="topo">
-    <a class="wordmark" href="#topo">Solano</a>
-    <a href="https://github.com/moonixt/HackBrasil-Solano">GitHub</a>
+    <a class="wordmark" href="#topo"><span class="logo" aria-hidden="true"></span>Solano</a>
+    <a class="header-link" href="https://github.com/moonixt/HackBrasil-Solano">GitHub</a>
   </header>
 
-  <main id="conteudo" class="wrap">
-    <section class="hero">
-      <p class="eyebrow">Projeto do Hack Brasil</p>
-      <h1>Um agente de mensagens para cada região do Brasil.</h1>
-      <p class="lede">
-        Você conversa com o agente da sua região. O que as pessoas de lá compartilham
-        vira uma memória coletiva, no espírito do OpenStreetMap.
-      </p>
-      <a class="button" href="https://github.com/moonixt/HackBrasil-Solano">Ver o código</a>
+  <main id="conteudo">
+    <section class="wrap hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Projeto do Hack Brasil</p>
+        <h1>Um agente de mensagens para cada região do Brasil.</h1>
+        <p class="lede">
+          Quem está em Porto Alegre e quem está em Manaus não precisam das mesmas respostas.
+          O Solano conecta cada pessoa ao agente da sua região — e o que a comunidade compartilha
+          vira uma memória coletiva, no espírito do OpenStreetMap.
+        </p>
+        <div class="hero-actions">
+          <a class="button" href="https://github.com/moonixt/HackBrasil-Solano">Ver o código</a>
+          <a class="text-link" href="#como-funciona">Como funciona <span aria-hidden="true">↓</span></a>
+        </div>
+      </div>
+
+      <figure class="phone" aria-label="Simulação de uma conversa com o Solano">
+        <div class="phone-screen">
+          <div class="phone-bar">
+            <span class="avatar">S</span>
+            <span class="who">
+              <strong>Solano</strong>
+              <small data-status>online</small>
+            </span>
+          </div>
+          <ol class="chat" data-chat>
+            <li class="bubble me">Oi!</li>
+            <li class="bubble bot">Oi! Antes de tudo: de qual cidade e estado você fala?</li>
+            <li class="bubble me">Recife, PE.</li>
+            <li class="route"><span class="dot dot-nordeste"></span>Conectado ao agente <strong>Nordeste</strong></li>
+            <li class="bubble bot">Prontinho. Sou o agente do Nordeste e já sei o que a comunidade daqui me contou. Pode perguntar.</li>
+            <li class="typing" aria-hidden="true"><span></span><span></span><span></span></li>
+          </ol>
+        </div>
+        <figcaption>Simulação do fluxo. O MVP será no Telegram.</figcaption>
+      </figure>
     </section>
 
-    <section id="como-funciona" aria-labelledby="como-funciona-titulo">
-      <h2 id="como-funciona-titulo">Como funciona</h2>
+    <section class="statement">
+      <p class="wrap reveal">
+        Um assistente genérico responde igual para o país inteiro.
+        <span>O Solano começa pela região — e aprende com quem vive nela.</span>
+      </p>
+    </section>
+
+    <section class="wrap section" id="como-funciona" aria-labelledby="como-funciona-titulo">
+      <header class="section-head reveal">
+        <p class="eyebrow">Como funciona</p>
+        <h2 id="como-funciona-titulo">Três passos, do primeiro “oi” à memória da região.</h2>
+      </header>
+
       <ol class="steps">
-        <li>
+        <li class="step reveal">
+          <div class="mock mock-ask" aria-hidden="true">
+            <div class="mini bot">De qual cidade e estado você fala?</div>
+            <div class="mini me">Curitiba, PR.</div>
+          </div>
+          <span class="step-num">1</span>
           <h3>Você diz de onde é</h3>
-          <p>Na primeira mensagem, o Solano pergunta sua cidade e estado. A conta usa só nome e telefone.</p>
+          <p>Na primeira mensagem, o Solano pergunta sua cidade e estado. A conta usa só nome e telefone — nada além disso.</p>
         </li>
-        <li>
-          <h3>Fala com o agente da região</h3>
-          <p>A conversa segue com o agente do Sul, Sudeste, Centro-Oeste, Norte ou Nordeste.</p>
+
+        <li class="step reveal">
+          <div class="mock mock-route" aria-hidden="true">
+            <span class="from">PR</span>
+            <span class="wire"></span>
+            <ul class="pills">
+              <li class="on">Sul</li>
+              <li>Sudeste</li>
+              <li>Centro-Oeste</li>
+              <li>Norte</li>
+              <li>Nordeste</li>
+            </ul>
+          </div>
+          <span class="step-num">2</span>
+          <h3>Vai para o agente da região</h3>
+          <p>O estado decide a região. A conversa segue com um agente que tem o contexto local à mão.</p>
         </li>
-        <li>
+
+        <li class="step reveal">
+          <div class="mock mock-memory" aria-hidden="true">
+            <div class="note"><span class="ini">A</span>Ônibus mudou de rota</div>
+            <div class="note"><span class="ini">J</span>Posto abre às 7h</div>
+            <div class="note"><span class="ini">M</span>Rua alaga quando chove</div>
+          </div>
+          <span class="step-num">3</span>
           <h3>A região aprende junto</h3>
-          <p>Ruas, serviços, avisos: o que uma pessoa conta ajuda quem chega depois.</p>
+          <p>O que cada pessoa conta alimenta a memória da região. Quem chega depois já encontra esse conhecimento.</p>
         </li>
       </ol>
     </section>
 
-    <section id="regioes" aria-labelledby="regioes-titulo">
-      <h2 id="regioes-titulo">Cinco regiões</h2>
+    <section class="memory-band" aria-labelledby="memoria-titulo">
+      <div class="wrap memory-grid">
+        <div class="reveal">
+          <p class="eyebrow">Memória compartilhada</p>
+          <h2 id="memoria-titulo">Como o OpenStreetMap, só que para o que se sabe de cada lugar.</h2>
+          <p class="body">
+            No OpenStreetMap, quem conhece a rua desenha o mapa. No Solano, quem vive na região
+            ensina o agente: ruas, serviços, hábitos, avisos. Cada região tem a própria memória —
+            o que se conta no Norte não se mistura com o Sul.
+          </p>
+        </div>
+
+        <div class="feed reveal" aria-hidden="true">
+          <div class="feed-head">
+            <span class="dot dot-nordeste"></span>
+            Memória do Nordeste
+            <span class="count" data-count>128</span>
+          </div>
+          <ul class="feed-list" data-feed>
+            <li><span class="ini">R</span><span><strong>Rafa</strong> contou sobre a feira do bairro</span></li>
+            <li><span class="ini">L</span><span><strong>Lu</strong> avisou de obra na avenida</span></li>
+            <li><span class="ini">C</span><span><strong>Caio</strong> indicou um posto de saúde</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap section" id="regioes" aria-labelledby="regioes-titulo">
+      <header class="section-head reveal">
+        <p class="eyebrow">Território</p>
+        <h2 id="regioes-titulo">Cinco regiões, cinco agentes.</h2>
+      </header>
       <ul class="regions">
-        <li><strong>Sul</strong> <span>Porto Alegre, Curitiba, Florianópolis</span></li>
-        <li><strong>Sudeste</strong> <span>São Paulo, Rio de Janeiro, Belo Horizonte</span></li>
-        <li><strong>Centro-Oeste</strong> <span>Brasília, Goiânia, Campo Grande</span></li>
-        <li><strong>Norte</strong> <span>Manaus, Belém, Porto Velho</span></li>
-        <li><strong>Nordeste</strong> <span>Salvador, Recife, Fortaleza</span></li>
+        <li class="region reveal" style="--tone: var(--sul)">
+          <span class="dot"></span>
+          <h3>Sul</h3>
+          <p>Porto Alegre, Curitiba, Florianópolis</p>
+        </li>
+        <li class="region reveal" style="--tone: var(--sudeste)">
+          <span class="dot"></span>
+          <h3>Sudeste</h3>
+          <p>São Paulo, Rio de Janeiro, Belo Horizonte</p>
+        </li>
+        <li class="region reveal" style="--tone: var(--centro)">
+          <span class="dot"></span>
+          <h3>Centro-Oeste</h3>
+          <p>Brasília, Goiânia, Campo Grande</p>
+        </li>
+        <li class="region reveal" style="--tone: var(--norte)">
+          <span class="dot"></span>
+          <h3>Norte</h3>
+          <p>Manaus, Belém, Porto Velho</p>
+        </li>
+        <li class="region reveal" style="--tone: var(--nordeste)">
+          <span class="dot"></span>
+          <h3>Nordeste</h3>
+          <p>Salvador, Recife, Fortaleza</p>
+        </li>
       </ul>
     </section>
 
-    <section id="estado" aria-labelledby="estado-titulo">
-      <h2 id="estado-titulo">Onde estamos</h2>
-      <p>
-        Em construção no Hack Brasil. A API em FastAPI e o Postgres com pgvector já estão no repositório;
-        os agentes e a memória vêm a seguir. O MVP será no Telegram — ainda não há bot público.
-      </p>
+    <section class="wrap section" id="estado" aria-labelledby="estado-titulo">
+      <div class="status reveal">
+        <div>
+          <p class="eyebrow">Onde estamos</p>
+          <h2 id="estado-titulo">Em construção no Hack Brasil.</h2>
+          <p class="body">
+            A base já está no repositório. O MVP será no Telegram — por enquanto não há bot público.
+          </p>
+        </div>
+        <ol class="timeline">
+          <li class="done"><strong>Base</strong><span>API em FastAPI, Postgres com pgvector</span></li>
+          <li><strong>Agentes</strong><span>Primeiro contato e roteamento por região</span></li>
+          <li><strong>Memória</strong><span>O acervo coletivo de cada região</span></li>
+          <li><strong>MVP</strong><span>Conversa aberta no Telegram</span></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="wrap closing reveal">
+      <h2>O código é aberto.</h2>
+      <p>Acompanhe o projeto, abra uma issue ou mande um pull request.</p>
+      <a class="button" href="https://github.com/moonixt/HackBrasil-Solano">Ver no GitHub</a>
     </section>
   </main>
 
@@ -75,5 +205,7 @@
     <p>Solano · Hack Brasil</p>
     <a href="https://github.com/moonixt/HackBrasil-Solano">github.com/moonixt/HackBrasil-Solano</a>
   </footer>
+
+  <script src="app.js" defer></script>
 </body>
 </html>
