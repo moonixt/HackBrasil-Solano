@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solano — agentes regionais de mensagens para o Brasil</title>
+  <meta name="description" content="Proposta em desenvolvimento no Hack Brasil: um agente de mensagens para cada região do Brasil, com memória compartilhada no espírito do OpenStreetMap. MVP previsto no Telegram.">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#1c4536">
+  <meta property="og:title" content="Solano — agentes regionais de mensagens para o Brasil">
+  <meta property="og:description" content="Proposta em desenvolvimento no Hack Brasil: cinco agentes regionais e uma memória compartilhada colaborativa. O canal previsto do MVP é o Telegram. Não há bot público.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#conteudo">Ir para o conteúdo</a>
+
+  <header class="site-header" id="topo">
+    <div class="wrap masthead">
+      <a class="wordmark" href="#topo">Solano</a>
+      <a class="button button-small" href="https://github.com/moonixt/HackBrasil-Solano">Repositório</a>
+    </div>
+    <nav class="wrap site-nav" aria-label="Seções da página">
+      <ul>
+        <li><a href="#problema">Problema</a></li>
+        <li><a href="#solucao">Solução</a></li>
+        <li><a href="#para-quem">Para quem</a></li>
+        <li><a href="#como-funciona">Como funciona</a></li>
+        <li><a href="#regioes">Regiões</a></li>
+        <li><a href="#memoria">Memória</a></li>
+        <li><a href="#estado">Estado</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="conteudo">
+    <div class="wrap">
+      <p class="banner" role="note">
+        <strong>Proposta em desenvolvimento.</strong>
+        Esta página apresenta o Solano para a submissão do Hack Brasil.
+        O atendimento por mensagem, os agentes regionais e a memória compartilhada permanecem no desenho do produto.
+        Não há bot público, cadastro aberto nem números de uso.
+      </p>
+
+      <header class="hero">
+        <p class="kicker">Hack Brasil · proposta em desenvolvimento</p>
+        <h1>Um agente de mensagens para cada região do Brasil.</h1>
+        <p class="lede">
+          O Solano propõe cinco agentes regionais — Sul, Sudeste, Centro-Oeste, Norte e Nordeste —
+          e uma memória compartilhada que as pessoas da mesma região construiriam juntas,
+          no espírito do OpenStreetMap.
+        </p>
+        <p class="actions">
+          <a class="button" href="https://github.com/moonixt/HackBrasil-Solano">Abrir o repositório</a>
+          <a class="button button-secondary" href="#estado">Ver o estado do projeto</a>
+        </p>
+      </header>
+    </div>
+
+    <section class="wrap atlas" aria-labelledby="atlas-titulo">
+      <p class="kicker" id="atlas-titulo">Cinco regiões oficiais</p>
+      <ol class="rings">
+        <li class="ring ring-sul">
+          <span class="ring-index" aria-hidden="true">01</span>
+          <span class="ring-name">Sul</span>
+        </li>
+        <li class="ring ring-sudeste">
+          <span class="ring-index" aria-hidden="true">02</span>
+          <span class="ring-name">Sudeste</span>
+        </li>
+        <li class="ring ring-centro">
+          <span class="ring-index" aria-hidden="true">03</span>
+          <span class="ring-name">Centro-<span class="ring-break">Oeste</span></span>
+        </li>
+        <li class="ring ring-norte">
+          <span class="ring-index" aria-hidden="true">04</span>
+          <span class="ring-name">Norte</span>
+        </li>
+        <li class="ring ring-nordeste">
+          <span class="ring-index" aria-hidden="true">05</span>
+          <span class="ring-name">Nordeste</span>
+        </li>
+      </ol>
+      <p class="atlas-note">Cada nome é uma das cinco regiões oficiais. As cidades de exemplo aparecem mais abaixo e não fecham a lista.</p>
+    </section>
+
+    <section class="band" id="problema" aria-labelledby="problema-titulo">
+      <div class="wrap prose">
+        <p class="section-index">01 — Problema</p>
+        <h2 id="problema-titulo">O contexto local se perde na conversa de cada pessoa.</h2>
+        <p>
+          A proposta nasce de um incômodo direto. O que uma pessoa relata fica na conversa dela.
+          Um agente único, sem território, trata do mesmo modo quem está no Sul e quem está no Norte.
+          Quem chega depois não herda o que a comunidade daquela região já contou.
+        </p>
+        <p>
+          O Solano parte daí: o conhecimento regional precisa de um lugar comum, separado por território,
+          e alimentado por quem vive ali.
+        </p>
+      </div>
+    </section>
+
+    <section class="band band-alt" id="solucao" aria-labelledby="solucao-titulo">
+      <div class="wrap prose">
+        <p class="section-index">02 — Solução</p>
+        <h2 id="solucao-titulo">Cinco agentes regionais e uma memória por território.</h2>
+        <p>O que segue é o desenho da proposta, não um atendimento já em funcionamento.</p>
+        <p>
+          No desenho, o Solano atende a pessoa a partir da região onde ela está. No primeiro contato,
+          o agente pergunta a cidade e o estado. A conta prevista usa só nome e telefone.
+          A conversa segue com o agente daquela região, que consulta e alimenta
+          uma memória compartilhada entre as pessoas do mesmo território.
+        </p>
+        <p>
+          Cada agente regional teria acesso mais direto ao que importa na sua área:
+          Sul, Sudeste, Centro-Oeste, Norte ou Nordeste.
+        </p>
+        <p>
+          A visão de produto no
+          <a href="https://github.com/moonixt/HackBrasil-Solano/blob/dev/moonixt/README.md">README do repositório</a>
+          descreve essa conversa e fala em WhatsApp. Para o MVP do Hack Brasil, o canal previsto é o Telegram.
+          WhatsApp e Telegram, aqui, são desenho de produto: nenhum dos dois está publicado.
+        </p>
+      </div>
+    </section>
+
+    <section class="band" id="para-quem" aria-labelledby="para-quem-titulo">
+      <div class="wrap">
+        <p class="section-index">03 — Público</p>
+        <h2 id="para-quem-titulo">Para quem a proposta foi pensada.</h2>
+        <div class="audience">
+          <article>
+            <h3>Quem fala com o agente</h3>
+            <p>
+              Pessoas que moram ou circulam em uma das cinco regiões oficiais e precisam de um agente
+              de mensagens que parta do próprio território, em vez de um atendimento genérico para o país inteiro.
+            </p>
+          </article>
+          <article>
+            <h3>Quem constrói a memória</h3>
+            <p>
+              A comunidade dessa região. O que as pessoas compartilham — ruas, serviços, hábitos, avisos —
+              alimentaria o mesmo acervo. Quem chega depois se beneficiaria do que a região já ensinou.
+            </p>
+          </article>
+        </div>
+        <p class="fine">
+          Esse é o público da proposta. Não há pessoas cadastradas, comunidade ativa nem atendimento em funcionamento.
+        </p>
+      </div>
+    </section>
+
+    <section class="band band-alt" id="como-funciona" aria-labelledby="como-funciona-titulo">
+      <div class="wrap">
+        <p class="section-index">04 — Fluxo proposto</p>
+        <h2 id="como-funciona-titulo">Como a conversa foi desenhada.</h2>
+        <p class="lede lede-tight">Nenhum passo abaixo está disponível para uso. É o fluxo descrito no repositório.</p>
+        <ol class="steps">
+          <li>
+            <span class="step-num" aria-hidden="true">01</span>
+            <div>
+              <h3>Primeira mensagem</h3>
+              <p>A pessoa envia a primeira mensagem. No MVP, o canal previsto para isso é o Telegram.</p>
+            </div>
+          </li>
+          <li>
+            <span class="step-num" aria-hidden="true">02</span>
+            <div>
+              <h3>Cidade e estado</h3>
+              <p>O agente pergunta de qual cidade e de qual estado a pessoa é, para reconhecer a região.</p>
+            </div>
+          </li>
+          <li>
+            <span class="step-num" aria-hidden="true">03</span>
+            <div>
+              <h3>Conta enxuta</h3>
+              <p>A conta seria criada só com nome e telefone.</p>
+            </div>
+          </li>
+          <li>
+            <span class="step-num" aria-hidden="true">04</span>
+            <div>
+              <h3>Agente da região</h3>
+              <p>A conversa passa ao agente regional correspondente: Sul, Sudeste, Centro-Oeste, Norte ou Nordeste.</p>
+            </div>
+          </li>
+          <li>
+            <span class="step-num" aria-hidden="true">05</span>
+            <div>
+              <h3>Memória em comum</h3>
+              <p>O agente responderia com o contexto daquela região. Com o uso, a memória compartilhada iria sendo atualizada.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="band" id="regioes" aria-labelledby="regioes-titulo">
+      <div class="wrap">
+        <p class="section-index">05 — Território</p>
+        <h2 id="regioes-titulo">As cinco regiões do modelo.</h2>
+        <p class="lede lede-tight">
+          O Brasil entra no Solano pelas cinco regiões oficiais. As cidades abaixo são exemplos do repositório, não uma cobertura fechada.
+        </p>
+        <ul class="region-grid">
+          <li class="region-card ring-sul">
+            <h3>Sul</h3>
+            <p class="region-label">Exemplos de cidades</p>
+            <ul>
+              <li>Porto Alegre</li>
+              <li>Curitiba</li>
+              <li>Florianópolis</li>
+              <li>Pelotas</li>
+              <li>Joinville</li>
+            </ul>
+          </li>
+          <li class="region-card ring-sudeste">
+            <h3>Sudeste</h3>
+            <p class="region-label">Exemplos de cidades</p>
+            <ul>
+              <li>São Paulo</li>
+              <li>Rio de Janeiro</li>
+              <li>Belo Horizonte</li>
+              <li>Campinas</li>
+              <li>Vitória</li>
+            </ul>
+          </li>
+          <li class="region-card ring-centro">
+            <h3>Centro-Oeste</h3>
+            <p class="region-label">Exemplos de cidades</p>
+            <ul>
+              <li>Brasília</li>
+              <li>Goiânia</li>
+              <li>Campo Grande</li>
+              <li>Cuiabá</li>
+              <li>Anápolis</li>
+            </ul>
+          </li>
+          <li class="region-card ring-norte">
+            <h3>Norte</h3>
+            <p class="region-label">Exemplos de cidades</p>
+            <ul>
+              <li>Manaus</li>
+              <li>Belém</li>
+              <li>Porto Velho</li>
+              <li>Boa Vista</li>
+              <li>Macapá</li>
+            </ul>
+          </li>
+          <li class="region-card ring-nordeste">
+            <h3>Nordeste</h3>
+            <p class="region-label">Exemplos de cidades</p>
+            <ul>
+              <li>Salvador</li>
+              <li>Recife</li>
+              <li>Fortaleza</li>
+              <li>São Luís</li>
+              <li>Natal</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="band band-alt" id="memoria" aria-labelledby="memoria-titulo">
+      <div class="wrap">
+        <p class="section-index">06 — Memória</p>
+        <h2 id="memoria-titulo">Memória compartilhada, no espírito do OpenStreetMap.</h2>
+        <p class="lede lede-tight">
+          O conhecimento não ficaria só na conversa individual. O que as pessoas da mesma região compartilham
+          alimentaria um acervo comum daquele território.
+        </p>
+        <ul class="memory-grid">
+          <li>
+            <h3>Por região</h3>
+            <p>Cada uma das cinco regiões tem a própria memória. O acervo do Norte não se mistura com o do Sul.</p>
+          </li>
+          <li>
+            <h3>Coletiva</h3>
+            <p>As pessoas daquela região contribuiriam para o mesmo conjunto de informações.</p>
+          </li>
+          <li>
+            <h3>Estilo OpenStreetMap</h3>
+            <p>As interações enriqueceriam o mapa de conhecimento local ao longo do tempo: ruas, serviços, hábitos, avisos — o que a própria região fosse ensinando.</p>
+          </li>
+        </ul>
+        <blockquote class="pull">
+          <p>Quem chega depois se beneficia do que a comunidade já relatou.</p>
+          <footer>
+            Frase da proposta no
+            <a href="https://github.com/moonixt/HackBrasil-Solano/blob/dev/moonixt/README.md#memória-compartilhada-por-região">README, seção de memória compartilhada</a>.
+            Descreve a intenção. A memória compartilhada ainda não está em uso.
+          </footer>
+        </blockquote>
+      </div>
+    </section>
+
+    <section class="band" id="estado" aria-labelledby="estado-titulo">
+      <div class="wrap state-grid">
+        <div class="prose">
+          <p class="section-index">07 — Estado do projeto</p>
+          <h2 id="estado-titulo">O que esta página pode afirmar.</h2>
+          <p>
+            O Solano está em construção no Hack Brasil. O repositório já contém o esqueleto da API em FastAPI,
+            o Postgres e a extensão pgvector — a migration inicial habilita a extensão <code>vector</code> —
+            e um healthcheck da API. Isso prepara a base. Não é o agente.
+          </p>
+          <p>
+            O fluxo de primeiro contato, o roteamento para cada região e a memória compartilhada ficam para as próximas etapas.
+            A interface em Next.js está prevista em projeto separado, fora deste repositório.
+          </p>
+          <p>
+            As instruções para subir a API e o banco em ambiente local estão no
+            <a href="https://github.com/moonixt/HackBrasil-Solano/blob/dev/moonixt/README.md#backend-local">README, na seção de execução local</a>.
+          </p>
+        </div>
+        <dl class="spec">
+          <div>
+            <dt>Canal do MVP</dt>
+            <dd>Telegram, previsto. Não há bot público nem link de conversa.</dd>
+          </div>
+          <div>
+            <dt>Outro canal na visão</dt>
+            <dd>O README descreve a conversa no WhatsApp. Também não está publicado.</dd>
+          </div>
+          <div>
+            <dt>Conta prevista</dt>
+            <dd>Nome e telefone, no desenho do produto. Não há cadastro aberto.</dd>
+          </div>
+          <div>
+            <dt>API</dt>
+            <dd>FastAPI neste repositório: esqueleto e healthcheck.</dd>
+          </div>
+          <div>
+            <dt>Dados</dt>
+            <dd>Postgres com pgvector. A memória regional que usaria vetores ainda não foi construída.</dd>
+          </div>
+          <div>
+            <dt>Interface</dt>
+            <dd>Next.js, previsto em projeto separado.</dd>
+          </div>
+          <div>
+            <dt>Agentes e memória</dt>
+            <dd>Desenhados nesta proposta. Ainda não operam.</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="band cta" id="repositorio" aria-labelledby="repositorio-titulo">
+      <div class="wrap prose">
+        <p class="section-index">Repositório</p>
+        <h2 id="repositorio-titulo">O lugar público do Solano é o código.</h2>
+        <p>
+          Sugestões e pull requests são bem-vindos, com o escopo alinhado à ideia — sem inflar o produto.
+          Não existe um bot de Telegram para chamar a partir desta página.
+        </p>
+        <p class="actions">
+          <a class="button" href="https://github.com/moonixt/HackBrasil-Solano">Abrir o repositório</a>
+          <a class="button button-secondary" href="https://github.com/moonixt/HackBrasil-Solano/blob/dev/moonixt/README.md">Ler a proposta no README</a>
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <p class="wordmark wordmark-plain">Solano</p>
+        <p>Página estática da proposta para o Hack Brasil. Não coleta dados e não conversa com a API.</p>
+      </div>
+      <div>
+        <p><a href="https://github.com/moonixt/HackBrasil-Solano">github.com/moonixt/HackBrasil-Solano</a></p>
+        <p>
+          Fontes:
+          <a href="fonts/OFL-Fraunces.txt">Fraunces</a>
+          e
+          <a href="fonts/OFL-AtkinsonHyperlegible.txt">Atkinson Hyperlegible</a>,
+          sob a SIL Open Font License.
+        </p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

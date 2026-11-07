@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Página não encontrada — Solano</title>
+  <meta name="description" content="Este endereço não faz parte da página pública do Solano, proposta em desenvolvimento no Hack Brasil.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body { margin: 0; background: #f3ecdf; color: #1c1916; font-family: Georgia, "Times New Roman", serif; }
+    main { max-width: 40rem; margin: 0 auto; padding: 4rem 1.25rem 5rem; }
+    a { color: #1d4e89; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="kicker">Solano · Hack Brasil</p>
+    <h1>Esta página não existe.</h1>
+    <p class="lede">O endereço não faz parte da página pública da proposta. O Solano segue em desenvolvimento: não há bot para abrir a partir daqui.</p>
+    <p class="actions">
+      <a class="button" id="inicio" href="index.html">Voltar ao início</a>
+      <a class="button button-secondary" href="https://github.com/moonixt/HackBrasil-Solano">Abrir o repositório</a>
+    </p>
+  </main>
+  <script>
+    (function () {
+      var parts = location.pathname.split("/").filter(Boolean);
+      var marker = "HackBrasil-Solano";
+      var at = parts.indexOf(marker);
+      if (at === -1) return;
+      var root = "/" + parts.slice(0, at + 1).join("/") + "/";
+      var home = document.getElementById("inicio");
+      if (home) home.href = root;
+      var nodes = document.querySelectorAll('link[rel="stylesheet"], link[rel="icon"]');
+      for (var i = 0; i < nodes.length; i++) {
+        var href = nodes[i].getAttribute("href");
+        if (!href || href.charAt(0) === "/" || href.indexOf("://") !== -1) continue;
+        nodes[i].setAttribute("href", root + href);
+      }
+    })();
+  </script>
+</body>
+</html>

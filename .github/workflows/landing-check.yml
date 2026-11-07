@@ -1,0 +1,33 @@
+name: Verificar landing
+
+on:
+  pull_request:
+    paths:
+      - "docs/**"
+      - "scripts/**"
+      - "README.md"
+      - ".github/workflows/landing-check.yml"
+      - ".github/workflows/pages.yml"
+  push:
+    branches:
+      - dev/moonixt
+    paths:
+      - "docs/**"
+      - "scripts/**"
+      - "README.md"
+      - ".github/workflows/landing-check.yml"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Conferir a página estática
+        run: python3 scripts/check_landing.py

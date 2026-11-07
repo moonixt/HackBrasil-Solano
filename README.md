@@ -8,6 +8,8 @@ O Solano é um agente no WhatsApp que atende a pessoa a partir da região onde e
 
 Cada agente regional mantém uma **memória compartilhada** entre todas as pessoas da mesma região. As interações alimentam e enriquecem esse conhecimento ao longo do tempo, de forma colaborativa (inspirada no OSM).
 
+A página pública desta proposta, para a submissão do Hack Brasil, está em [`docs/index.html`](docs/index.html).
+
 ## Como funciona
 
 1. A pessoa envia a primeira mensagem no WhatsApp.
@@ -105,6 +107,45 @@ alembic upgrade head
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 pytest
 ```
+
+## Página pública
+
+A submissão do Hack Brasil pede uma página em HTTPS, com título, que diga o que o projeto faz e para quem. Essa página é estática e fica em [`docs/`](docs/index.html): HTML, CSS e as fontes. Ela não usa o backend, não chama a API e não substitui o Next.js previsto em outro projeto.
+
+O arquivo `docs/regioes-brasil.png` continua sendo o diagrama deste README. A landing não o embute, para não tratar os e-mails ilustrativos do desenho como canal de contato.
+
+### Endereço previsto
+
+No repositório público `moonixt/HackBrasil-Solano`, o GitHub Pages de projeto usaria:
+
+<https://moonixt.github.io/HackBrasil-Solano/>
+
+Essa URL é a previsão. Ela só passa a responder depois que o Pages estiver ativado com a pasta `/docs` como origem. Enquanto a configuração não existir, o endereço não é um site no ar.
+
+### Como publicar só a landing
+
+As duas formas abaixo publicam o diretório `docs/`, não o backend. Ativar o Pages não muda a branch padrão do repositório. Dá para publicar sem merge se a branch escolhida já contiver `docs/index.html`; o que falta, nesse caso, é permissão de administrador (ou *manage GitHub Pages settings*) para gravar a origem.
+
+1. **GitHub Actions.** O workflow [`.github/workflows/pages.yml`](.github/workflows/pages.yml) envia apenas `docs/` quando `dev/moonixt` recebe push nessa pasta. Em *Settings → Pages → Build and deployment*, a origem precisa ser **GitHub Actions**.
+2. **Branch e pasta `/docs`.** Em *Settings → Pages*, escolha a branch (depois do merge, `dev/moonixt`) e a pasta `/docs`. O arquivo `docs/.nojekyll` impede o Jekyll de reprocessar o HTML. Os caminhos da página são relativos para funcionar no subdiretório `/HackBrasil-Solano/`.
+
+### Ver localmente
+
+No mesmo prefixo que o Pages usa:
+
+```bash
+python3 scripts/preview_landing.py
+```
+
+Abra <http://127.0.0.1:8765/HackBrasil-Solano/>.
+
+A verificação de título, seções, link do repositório, ausência de bot inventado e resolução dos arquivos sob esse prefixo:
+
+```bash
+python3 scripts/check_landing.py
+```
+
+O workflow [`.github/workflows/landing-check.yml`](.github/workflows/landing-check.yml) roda o mesmo script.
 
 ## Contribuindo / próximos passos
 
