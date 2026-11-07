@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Solano — um agente de mensagens para cada região do Brasil</title>
-  <meta name="description" content="Projeto do Hack Brasil: um agente de mensagens para cada região do Brasil, com memória compartilhada no espírito do OpenStreetMap.">
+  <title>Solano — orientação local sobre a rede de saúde, pelo Telegram</title>
+  <meta name="description" content="Projeto do Hack Brasil: o Solano transforma informações dispersas sobre a rede de saúde em orientação local, simples e acessível pelo Telegram.">
   <meta name="color-scheme" content="light">
   <meta name="theme-color" content="#ffffff">
-  <meta property="og:title" content="Solano — um agente de mensagens para cada região do Brasil">
-  <meta property="og:description" content="Projeto do Hack Brasil: cinco agentes regionais e uma memória compartilhada por região.">
+  <meta property="og:title" content="Solano — orientação local sobre a rede de saúde">
+  <meta property="og:description" content="Onde se vacinar, como marcar consulta na UBS, que documentos levar — com fonte e data de atualização, pelo Telegram.">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="pt_BR">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -26,12 +26,12 @@
   <main id="conteudo">
     <section class="wrap hero">
       <div class="hero-copy">
-        <p class="eyebrow">Projeto do Hack Brasil</p>
-        <h1>Um agente de mensagens para cada região do Brasil.</h1>
+        <p class="eyebrow">Projeto do Hack Brasil · Saúde</p>
+        <h1>O caminho até o atendimento de saúde, explicado no Telegram.</h1>
         <p class="lede">
-          Quem está em Porto Alegre e quem está em Manaus não precisam das mesmas respostas.
-          O Solano conecta cada pessoa ao agente da sua região — e o que a comunidade compartilha
-          vira uma memória coletiva, no espírito do OpenStreetMap.
+          O Solano transforma informações dispersas sobre a rede de saúde em orientação local,
+          simples e acessível. Você diz onde está e pergunta — ele explica o caminho,
+          os documentos e os locais, com fonte e data de atualização.
         </p>
         <div class="hero-actions">
           <a class="button" href="https://github.com/moonixt/HackBrasil-Solano">Ver o código</a>
@@ -49,103 +49,134 @@
             </span>
           </div>
           <ol class="chat" data-chat>
-            <li class="bubble me">Oi!</li>
-            <li class="bubble bot">Oi! Antes de tudo: de qual cidade e estado você fala?</li>
-            <li class="bubble me">Recife, PE.</li>
-            <li class="route"><span class="dot dot-nordeste"></span>Conectado ao agente <strong>Nordeste</strong></li>
-            <li class="bubble bot">Prontinho. Sou o agente do Nordeste e já sei o que a comunidade daqui me contou. Pode perguntar.</li>
+            <li class="bubble me">Oi! Onde consigo me vacinar?</li>
+            <li class="bubble bot">Te ajudo! Em qual cidade e bairro você está?</li>
+            <li class="bubble me">Recife, Boa Viagem.</li>
+            <li class="bubble bot">
+              A UBS do seu bairro aplica vacinas de segunda a sexta, das 8h às 16h.
+              Leve documento com foto, cartão do SUS e a caderneta de vacinação.
+              <span class="source">Fonte: Secretaria de Saúde · atualizado há 3 dias</span>
+            </li>
             <li class="typing" aria-hidden="true"><span></span><span></span><span></span></li>
           </ol>
         </div>
-        <figcaption>Simulação do fluxo. O MVP será no Telegram.</figcaption>
+        <figcaption>Simulação. Dados ilustrativos.</figcaption>
       </figure>
     </section>
 
     <section class="statement">
       <p class="wrap reveal">
-        Um assistente genérico responde igual para o país inteiro.
-        <span>O Solano começa pela região — e aprende com quem vive nela.</span>
+        A informação sobre a rede de saúde existe, mas está espalhada em sites, cartazes e boca a boca.
+        <span>O Solano junta tudo numa conversa — com fonte e data.</span>
       </p>
     </section>
 
     <section class="wrap section" id="como-funciona" aria-labelledby="como-funciona-titulo">
       <header class="section-head reveal">
         <p class="eyebrow">Como funciona</p>
-        <h2 id="como-funciona-titulo">Três passos, do primeiro “oi” à memória da região.</h2>
+        <h2 id="como-funciona-titulo">Da dúvida ao atendimento em três mensagens.</h2>
       </header>
 
       <ol class="steps">
         <li class="step reveal">
-          <div class="mock mock-ask" aria-hidden="true">
-            <div class="mini bot">De qual cidade e estado você fala?</div>
-            <div class="mini me">Curitiba, PR.</div>
+          <div class="mock" aria-hidden="true">
+            <div class="mini bot">Em qual cidade e bairro você está?</div>
+            <div class="mini me">Recife, Boa Viagem.</div>
           </div>
           <span class="step-num">1</span>
-          <h3>Você diz de onde é</h3>
-          <p>Na primeira mensagem, o Solano pergunta sua cidade e estado. A conta usa só nome e telefone — nada além disso.</p>
+          <h3>Você diz onde está</h3>
+          <p>Cidade ou bairro. É o que basta para o Solano saber de qual rede de saúde falar.</p>
         </li>
 
         <li class="step reveal">
-          <div class="mock mock-route" aria-hidden="true">
-            <span class="from">PR</span>
-            <span class="wire"></span>
-            <ul class="pills">
-              <li class="on">Sul</li>
-              <li>Sudeste</li>
-              <li>Centro-Oeste</li>
-              <li>Norte</li>
-              <li>Nordeste</li>
+          <div class="mock mock-questions" aria-hidden="true">
+            <ul class="pills" data-questions>
+              <li class="on">Onde consigo me vacinar?</li>
+              <li>Como marco consulta na UBS?</li>
+              <li>Que documentos preciso levar?</li>
+              <li>A unidade tem acessibilidade?</li>
             </ul>
           </div>
           <span class="step-num">2</span>
-          <h3>Vai para o agente da região</h3>
-          <p>O estado decide a região. A conversa segue com um agente que tem o contexto local à mão.</p>
+          <h3>Pergunta o que precisa</h3>
+          <p>Vacinação, consulta na UBS, horários, documentos — em linguagem do dia a dia.</p>
         </li>
 
         <li class="step reveal">
-          <div class="mock mock-memory" aria-hidden="true">
-            <div class="note"><span class="ini">A</span>Ônibus mudou de rota</div>
-            <div class="note"><span class="ini">J</span>Posto abre às 7h</div>
-            <div class="note"><span class="ini">M</span>Rua alaga quando chove</div>
+          <div class="mock mock-answer" aria-hidden="true">
+            <div class="answer">
+              <strong>UBS do bairro</strong>
+              <span>Seg a sex · 8h–16h</span>
+              <span>Documento com foto e cartão do SUS</span>
+              <span class="source">Fonte e data de atualização</span>
+            </div>
           </div>
           <span class="step-num">3</span>
-          <h3>A região aprende junto</h3>
-          <p>O que cada pessoa conta alimenta a memória da região. Quem chega depois já encontra esse conhecimento.</p>
+          <h3>Recebe o caminho</h3>
+          <p>Onde ir, o que levar e como agendar. Sempre com a fonte e quando a informação foi atualizada.</p>
         </li>
       </ol>
     </section>
 
-    <section class="memory-band" aria-labelledby="memoria-titulo">
+    <section class="memory-band" id="memoria" aria-labelledby="memoria-titulo">
       <div class="wrap memory-grid">
         <div class="reveal">
           <p class="eyebrow">Memória compartilhada</p>
-          <h2 id="memoria-titulo">Como o OpenStreetMap, só que para o que se sabe de cada lugar.</h2>
+          <h2 id="memoria-titulo">Moradores ajudam a manter tudo em dia. Com verificação.</h2>
           <p class="body">
-            No OpenStreetMap, quem conhece a rua desenha o mapa. No Solano, quem vive na região
-            ensina o agente: ruas, serviços, hábitos, avisos. Cada região tem a própria memória —
-            o que se conta no Norte não se mistura com o Sul.
+            A memória guarda unidades, horários, acessibilidade e formas de agendamento.
+            Como no OpenStreetMap, quem vive ali pode sugerir correções — mas elas ficam
+            pendentes até serem verificadas. Relato da comunidade não vira informação oficial
+            automaticamente.
           </p>
         </div>
 
         <div class="feed reveal" aria-hidden="true">
           <div class="feed-head">
-            <span class="dot dot-nordeste"></span>
-            Memória do Nordeste
-            <span class="count" data-count>128</span>
+            Sugestões de moradores
           </div>
           <ul class="feed-list" data-feed>
-            <li><span class="ini">R</span><span><strong>Rafa</strong> contou sobre a feira do bairro</span></li>
-            <li><span class="ini">L</span><span><strong>Lu</strong> avisou de obra na avenida</span></li>
-            <li><span class="ini">C</span><span><strong>Caio</strong> indicou um posto de saúde</span></li>
+            <li><span class="ini">L</span><span class="txt"><strong>Lu</strong> UBS agora abre às 7h</span><span class="state ok">verificada</span></li>
+            <li><span class="ini">C</span><span class="txt"><strong>Caio</strong> Rampa de acesso na entrada</span><span class="state ok">verificada</span></li>
+            <li><span class="ini">R</span><span class="txt"><strong>Rafa</strong> Agendamento também por telefone</span><span class="state">pendente</span></li>
           </ul>
         </div>
       </div>
     </section>
 
-    <section class="wrap section" id="regioes" aria-labelledby="regioes-titulo">
+    <section class="wrap section" id="escopo" aria-labelledby="escopo-titulo">
       <header class="section-head reveal">
-        <p class="eyebrow">Território</p>
-        <h2 id="regioes-titulo">Cinco regiões, cinco agentes.</h2>
+        <p class="eyebrow">Escopo</p>
+        <h2 id="escopo-titulo">Orienta o caminho. Não substitui o profissional de saúde.</h2>
+      </header>
+      <div class="scope">
+        <div class="scope-col reveal">
+          <h3>O Solano faz</h3>
+          <ul class="checks">
+            <li>Indica unidades, horários e acessibilidade</li>
+            <li>Explica como agendar e que documentos levar</li>
+            <li>Mostra a fonte e a data de cada informação</li>
+          </ul>
+        </div>
+        <div class="scope-col reveal">
+          <h3>O Solano não faz</h3>
+          <ul class="checks checks-no">
+            <li>Diagnóstico</li>
+            <li>Prescrição de medicamentos</li>
+            <li>Armazenamento de histórico clínico</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap section section-tight" id="regioes" aria-labelledby="regioes-titulo">
+      <header class="section-head reveal">
+        <p class="eyebrow">Visão de expansão</p>
+        <h2 id="regioes-titulo">Começa em uma cidade. Depois, um agente por região.</h2>
+        <p class="body">
+          O MVP é pequeno de propósito: uma cidade e um fluxo — encontrar uma UBS e entender como
+          acessar o atendimento. A visão é chegar às cinco regiões do Brasil, cada uma com seu agente.
+        </p>
       </header>
       <ul class="regions">
         <li class="region reveal" style="--tone: var(--sul)">
@@ -187,9 +218,9 @@
         </div>
         <ol class="timeline">
           <li class="done"><strong>Base</strong><span>API em FastAPI, Postgres com pgvector</span></li>
-          <li><strong>Agentes</strong><span>Primeiro contato e roteamento por região</span></li>
-          <li><strong>Memória</strong><span>O acervo coletivo de cada região</span></li>
-          <li><strong>MVP</strong><span>Conversa aberta no Telegram</span></li>
+          <li><strong>MVP</strong><span>Uma cidade, o fluxo da UBS, no Telegram</span></li>
+          <li><strong>Comunidade</strong><span>Sugestões de correção com verificação</span></li>
+          <li><strong>Expansão</strong><span>Cinco agentes regionais</span></li>
         </ol>
       </div>
     </section>
@@ -202,7 +233,7 @@
   </main>
 
   <footer class="wrap site-footer">
-    <p>Solano · Hack Brasil</p>
+    <p>Solano · Hack Brasil · Orientação, não diagnóstico.</p>
     <a href="https://github.com/moonixt/HackBrasil-Solano">github.com/moonixt/HackBrasil-Solano</a>
   </footer>
 

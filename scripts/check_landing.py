@@ -25,7 +25,11 @@ REQUIRED_IDS = {
     "como-funciona",
     "regioes",
     "estado",
+    "memoria",
+    "escopo",
     "como-funciona-titulo",
+    "memoria-titulo",
+    "escopo-titulo",
     "regioes-titulo",
     "estado-titulo",
 }
@@ -37,7 +41,13 @@ REQUIRED_PHRASES = [
     "FastAPI",
     "pgvector",
     "Postgres",
-    "nome e telefone",
+    "saúde",
+    "UBS",
+    "fonte e data de atualização",
+    "diagnóstico",
+    "prescrição",
+    "histórico clínico",
+    "pendentes até serem verificadas",
     "Sul",
     "Sudeste",
     "Centro-Oeste",
@@ -174,7 +184,7 @@ def main() -> int:
         fail(f"html lang deve ser pt-BR, veio {page.lang!r}")
     if page.h1 != 1:
         fail(f"a página precisa de um único h1, veio {page.h1}")
-    if "Solano" not in page.title or "Brasil" not in page.title:
+    if "Solano" not in page.title or "saúde" not in page.title:
         fail(f"title fraco ou ausente: {page.title!r}")
     if not any(meta.get("name") == "viewport" and "width=device-width" in meta.get("content", "") for meta in page.metas):
         fail("falta meta viewport")

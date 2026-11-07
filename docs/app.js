@@ -56,44 +56,45 @@
     play();
   }
 
-  // Passo 2: cada estado acende a sua região.
-  var pills = document.querySelectorAll(".pills li");
-  var from = document.querySelector(".mock-route .from");
-  if (pills.length && from) {
-    var states = ["PR", "SP", "GO", "AM", "BA"];
+  // Passo 2: as perguntas se revezam.
+  var questions = document.querySelectorAll("[data-questions] li");
+  if (questions.length) {
     var at = 0;
     setInterval(function () {
-      at = (at + 1) % states.length;
-      from.textContent = states[at];
-      pills.forEach(function (li, i) { li.classList.toggle("on", i === at); });
+      at = (at + 1) % questions.length;
+      questions.forEach(function (li, i) { li.classList.toggle("on", i === at); });
     }, 2000);
   }
 
-  // Memória: novas contribuições chegam no topo e o contador sobe.
+  // Memória: sugestões chegam pendentes; só depois da verificação viram "verificada".
   var feed = document.querySelector("[data-feed]");
-  var count = document.querySelector("[data-count]");
-  if (feed && count) {
-    var contributions = [
-      ["B", "Bia", "avisou que a linha de ônibus mudou"],
-      ["T", "Téo", "indicou uma biblioteca aberta à noite"],
-      ["N", "Nina", "contou onde tem feira aos domingos"],
-      ["D", "Davi", "avisou de rua alagada na chuva"],
-      ["I", "Iara", "indicou um posto que abre às 7h"],
-      ["R", "Rafa", "contou sobre a feira do bairro"]
+  if (feed) {
+    var suggestions = [
+      ["B", "Bia", "Vacina da gripe também aos sábados", true],
+      ["T", "Téo", "Elevador da unidade em manutenção", false],
+      ["N", "Nina", "Marcação de consulta pelo app da prefeitura", true],
+      ["D", "Davi", "Nova sala de vacinação no 2º andar", true],
+      ["I", "Iara", "Horário estendido às quintas", false]
     ];
     var next = 0;
     setInterval(function () {
-      var c = contributions[next];
-      next = (next + 1) % contributions.length;
+      var item = suggestions[next];
+      next = (next + 1) % suggestions.length;
       var li = document.createElement("li");
       li.className = "is-new";
-      li.innerHTML = '<span class="ini"></span><span><strong></strong> </span>';
-      li.querySelector(".ini").textContent = c[0];
-      li.querySelector("strong").textContent = c[1];
-      li.lastChild.appendChild(document.createTextNode(c[2]));
+      li.innerHTML = '<span class="ini"></span><span class="txt"><strong></strong><span></span></span><span class="state">pendente</span>';
+      li.querySelector(".ini").textContent = item[0];
+      li.querySelector("strong").textContent = item[1];
+      li.querySelector(".txt span").textContent = item[2];
       feed.insertBefore(li, feed.firstChild);
       while (feed.children.length > 3) feed.removeChild(feed.lastChild);
-      count.textContent = String(Number(count.textContent) + 1);
-    }, 2800);
+      if (item[3]) {
+        setTimeout(function () {
+          var state = li.querySelector(".state");
+          state.classList.add("ok");
+          state.textContent = "verificada";
+        }, 1800);
+      }
+    }, 3200);
   }
 })();
